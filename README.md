@@ -8,7 +8,7 @@ A browser-based manufacturing workspace: model a part, create a simplified mold,
 
 ## Run
 
-Open **[index.html](index.html)** in a desktop browser. Keep the adjacent `js/` and `css/` folders with the HTML. The browser loads the files directly; no installation or build is required to use the app.
+Open **[index.html](<https://jtech-co.github.io/Mold-Press/>)** in a desktop browser. Keep the adjacent `js/` and `css/` folders with the HTML. The browser loads the files directly; no installation or build is required to use the app.
 
 For a stable local address and browser storage, serve this folder:
 

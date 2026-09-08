@@ -1,0 +1,213 @@
+/* typography: loaded in index.html cascade order. */
+/* Fix 2: small-type legibility and a vertical, non-occluding press sequence. */
+small {
+  font-size: 12.5px;
+}
+.brand small {
+  letter-spacing: 1.25px;
+}
+.preview-tag {
+  letter-spacing: 0.6px;
+  margin-left: 7px;
+}
+.app-header {
+  gap: 20px;
+}
+.project-breadcrumb {
+  gap: 8px;
+}
+.project-breadcrumb > button {
+  max-width: 240px;
+}
+.stage-tabs > button {
+  padding: 0 15px;
+  gap: 7px;
+}
+.tab-sub {
+  letter-spacing: 0;
+}
+.left-sidebar > section {
+  flex-shrink: 0;
+}
+.left-sidebar > .tree-section {
+  flex: 1 0 auto;
+  min-height: 0;
+}
+.panel-heading {
+  letter-spacing: 0.3px;
+}
+.section-title {
+  letter-spacing: 0.4px;
+}
+.section-title > span,
+.section-title > small {
+  letter-spacing: 0;
+}
+.toolbar-group .btn {
+  padding: 5px 6px;
+  gap: 4px;
+}
+.toolbar-group.right {
+  padding-left: 5px;
+}
+.tool-grid .btn {
+  white-space: normal;
+  line-height: 1.35;
+  min-height: 37px;
+}
+.three-tools .btn {
+  white-space: normal;
+  line-height: 1.35;
+}
+.material-card {
+  gap: 8px;
+  padding: 10px 8px;
+}
+.material-card > span {
+  min-width: 0;
+}
+.material-card strong {
+  overflow-wrap: anywhere;
+  line-height: 1.3;
+}
+.material-card small {
+  line-height: 1.6;
+  white-space: normal;
+}
+.material-card small b {
+  margin: 0 3px;
+}
+.material-card .material-swatch {
+  width: 25px;
+  height: 25px;
+}
+.stat-grid strong {
+  white-space: nowrap;
+}
+.stat-grid strong small {
+  margin-left: 2px;
+}
+.emulation-badge {
+  letter-spacing: 0;
+}
+.nav-right {
+  gap: 11px;
+}
+.workspace-footer {
+  gap: 8px;
+  padding: 0 16px;
+}
+.workspace-footer > div:first-child {
+  gap: 10px;
+  min-width: 0;
+}
+.workspace-footer small {
+  line-height: 1.5;
+}
+.footer-actions {
+  gap: 5px;
+}
+.footer-actions .btn {
+  padding: 7px 8px;
+}
+.press-sequence {
+  top: 50%;
+  left: 16px;
+  right: auto;
+  bottom: auto;
+  transform: translateY(-50%);
+  width: 180px;
+  max-height: calc(100% - 148px);
+  overflow: auto;
+  padding: 14px 13px;
+  z-index: 3;
+  backdrop-filter: none;
+  background: #191f25f5;
+  border-color: #414d58;
+}
+.sequence-heading {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  line-height: 1.55;
+  letter-spacing: 0;
+  margin-bottom: 10px;
+}
+.sequence-heading strong {
+  line-height: 1.55;
+  font-weight: 500;
+  white-space: normal;
+}
+.sequence-stages {
+  flex-direction: column;
+  gap: 0;
+}
+.sequence-stages > div {
+  flex: none;
+  gap: 9px;
+  padding: 10px 0;
+  min-height: 42px;
+  white-space: normal;
+  line-height: 1.4;
+}
+.sequence-stages i {
+  min-width: 24px;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.sequence-track {
+  height: 3px;
+  margin-top: 11px;
+}
+.sequence-track > i {
+  transition: none;
+}
+.orientation {
+  width: 112px;
+}
+.orientation > span {
+  font-size: 12.5px;
+  letter-spacing: 0;
+}
+.statusbar {
+  height: 31px;
+  min-height: 31px;
+  letter-spacing: 0;
+}
+.statusbar > span {
+  gap: 5px;
+}
+.tray-chips > span {
+  max-width: 170px;
+}
+.press-tray-bar {
+  gap: 8px;
+  letter-spacing: 0;
+}
+@media (min-width: 1600px) {
+  .app-header {
+    gap: 28px;
+  }
+  .stage-tabs > button {
+    padding: 0 22px;
+  }
+  .toolbar-group .btn {
+    padding: 6px 9px;
+  }
+}
+@media (max-height: 850px) {
+  .press-sequence {
+    top: calc(50% + 20px);
+    bottom: auto;
+    padding: 11px 12px;
+    max-height: calc(100% - 136px);
+  }
+  .sequence-stages > div {
+    padding: 7px 0;
+    min-height: 37px;
+  }
+  .sequence-heading {
+    margin-bottom: 7px;
+  }
+}

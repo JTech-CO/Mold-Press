@@ -1,0 +1,15 @@
+{
+  "name": "mold-press",
+  "version": "1.1.1",
+  "private": true,
+  "description": "Development tools for the modular Mold Press browser app",
+  "scripts": {
+    "format": "prettier --write \"js/**/*.js\" \"css/**/*.css\" index.html",
+    "format:check": "prettier --check \"js/**/*.js\" \"css/**/*.css\" index.html"
+  },
+  "devDependencies": {
+    "acorn": "8.18.0",
+    "prettier": "3.9.6",
+    "postcss": "8.5.6"
+  }
+}

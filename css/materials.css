@@ -1,0 +1,21 @@
+/* materials: loaded in index.html cascade order. */
+/* Material library previews; product finishes are defined in surfaces.js. */
+.material-swatch.finish-aluminum-6061 {
+  background-image: repeating-linear-gradient(
+    0deg,
+    #ffffff35 0px,
+    #00000012 1px,
+    transparent 2px,
+    transparent 3px
+  );
+}
+.material-swatch.finish-nylon,
+.material-swatch.finish-cf-nylon {
+  background-image: radial-gradient(#ffffff35 0.6px, transparent 0.9px);
+  background-size: 3px 3px;
+}
+.material-swatch.finish-pc {
+  box-shadow:
+    inset 4px 5px 4px #ffffff70,
+    inset -6px -4px 7px #00000030;
+}

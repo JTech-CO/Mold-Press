@@ -1,0 +1,148 @@
+/* editing: loaded in index.html cascade order. */
+/* Fix 3: direct dimension editor, alignment form, explicit instance deletion. */
+.dimension-label.editable {
+  pointer-events: auto;
+  cursor: text;
+  z-index: 6;
+  user-select: none;
+  min-height: 30px;
+}
+.dimension-label.editable:hover,
+.dimension-label.editable:focus-visible {
+  border-color: var(--amber);
+  color: #f2d6af;
+  outline: 1px solid #8e6a3b;
+  outline-offset: 2px;
+}
+.dimension-label.editing {
+  z-index: 9;
+  border-color: var(--amber);
+  padding: 3px 5px;
+  background: #182129;
+}
+.dimension-label .dimension-value {
+  font: inherit;
+  font-weight: 500;
+}
+.dimension-input {
+  width: 100px;
+  min-width: 75px;
+  padding: 2px 5px !important;
+  border: 1px solid #957447;
+  background: #11181e;
+  font:
+    15px ui-monospace,
+    Consolas,
+    monospace !important;
+  color: #f6d7a8;
+  user-select: text;
+}
+.dimension-input.invalid {
+  border-color: #ec766e;
+  outline: 1px solid #ec766e;
+}
+.alignment-field select {
+  font: 12.5px var(--font);
+  max-width: 150px;
+  min-height: 29px;
+}
+.align-hint {
+  overflow-wrap: anywhere;
+  letter-spacing: 0;
+}
+.tray-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex-shrink: 0;
+}
+.tray-actions .icon-btn {
+  min-width: 26px;
+  min-height: 26px;
+}
+.delete-part:hover:not(:disabled) {
+  color: #f4a49e;
+  background: #472c2b;
+}
+.tree-row .delete-part {
+  flex-shrink: 0;
+}
+.press-tray-bar .tray-chips {
+  overflow-x: auto;
+  overflow-y: hidden;
+  min-width: 0;
+  align-items: center;
+  scrollbar-width: thin;
+  padding: 3px 0;
+}
+.press-tray-bar .tray-chips > span {
+  flex: 0 0 auto;
+  max-width: 210px;
+  min-height: 32px;
+  overflow: visible;
+  gap: 5px;
+}
+.tray-chips .chip-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  max-width: 150px;
+}
+.tray-chips .delete-part {
+  flex-shrink: 0;
+  min-height: 25px;
+  min-width: 25px;
+}
+/* Fix 4: additions belong to existing alignment/export panels only. */
+.assembly-alignment .btn {
+  margin-top: 12px;
+}
+.alignment-anchor {
+  font-size: 12.5px;
+  color: var(--amber);
+  margin-top: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.assembly-alignment select {
+  max-width: 142px;
+  font-size: 12.5px;
+}
+.export-result {
+  border: 1px solid #5f523f;
+  background: #242a2f;
+  padding: 14px;
+  margin-top: 14px;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.export-result > strong {
+  font-size: 13px;
+  color: var(--amber);
+}
+.export-filename {
+  font:
+    12.5px/1.65 ui-monospace,
+    monospace;
+  overflow-wrap: anywhere;
+}
+.export-result .tiny-text {
+  font-size: 12.5px;
+  margin-top: 0;
+}
+.export-png-preview {
+  width: 100%;
+  height: auto;
+  max-height: 230px;
+  object-fit: contain;
+  background: #101419;
+  border: 1px solid var(--line);
+}
+a.btn.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}

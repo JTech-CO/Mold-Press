@@ -1,0 +1,130 @@
+/* panels: loaded in index.html cascade order. */
+/* Compact inspector and tree rows follow the actual semantic form markup. */
+.selected-object {
+  display: block;
+  padding: 17px 16px;
+}
+.selected-object .eyebrow {
+  font-size: 12.5px;
+  letter-spacing: 1.4px;
+  margin-bottom: 9px;
+}
+.selected-object > .object-name {
+  display: block;
+  font-size: 15px;
+  width: 100%;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 0;
+  font-weight: 550;
+}
+.selected-object > .object-name:hover {
+  border-color: #4c5963;
+}
+.selected-object .object-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+.transform-field {
+  display: block;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin-bottom: 9px;
+}
+.transform-field > label {
+  display: block;
+  font-size: 12.5px;
+  color: #8e9ca6;
+  margin-bottom: 5px;
+}
+.transform-field .xyz-fields {
+  gap: 6px;
+  margin: 0;
+}
+.transform-field .xyz-fields > label {
+  border: 1px solid #35414b;
+  background: #131a20;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  padding: 0 6px;
+  border-radius: 3px;
+  min-width: 0;
+}
+.transform-field .xyz-fields > label > span {
+  font:
+    12.5px ui-monospace,
+    monospace;
+}
+.transform-field .xyz-fields input {
+  padding: 6px 0;
+  min-width: 0;
+  font-size: 13.75px;
+  width: 100%;
+}
+.tree-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  padding: 9px 7px;
+  margin: 4px -5px;
+  color: #bac3ca;
+  cursor: pointer;
+  min-height: 39px;
+  font-size: 13.75px;
+}
+.tree-row:hover {
+  background: #252c32;
+}
+.tree-row.selected {
+  background: #352e24;
+  border-color: #655036;
+  color: #f1c78f;
+}
+.tree-row > span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tree-root > span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tree-root small {
+  font:
+    12.5px ui-monospace,
+    monospace;
+  color: #6b7b88;
+}
+.shrink-detail {
+  font:
+    12.5px/1.7 ui-monospace,
+    monospace;
+  color: #8496a3;
+}
+.shrink-detail > span {
+  display: block;
+  margin-bottom: 4px;
+}
+.shrink-detail strong {
+  color: #c6d3db;
+  font-weight: 400;
+}
+.modal.samples {
+  width: 780px;
+}
+.material-title {
+  font-size: 19px;
+  display: block;
+  margin: 3px 0 8px;
+}

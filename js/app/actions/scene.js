@@ -242,7 +242,11 @@
       }
     };
     this.onFrame = (cam) => {
-      if (++this.frameN % 2) return;
+      const stamp = JSON.stringify([cam.vp, cam.w, cam.h, this.view.revision]);
+      if (!this.overlayDirty && this.overlayStamp === stamp) return;
+      this.overlayDirty = false;
+      this.overlayStamp = stamp;
+      this.overlayUpdates = (this.overlayUpdates || 0) + 1;
       if (this.state.componentLabels) {
         const labels = Array.from(this.viewRef.current?.querySelectorAll('[data-component]') || [])
           .flatMap((label) => {

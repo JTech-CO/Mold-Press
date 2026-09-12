@@ -103,6 +103,16 @@ async def run(url):
             await page.wait_for_timeout(350)
             assert await page.evaluate('!MoldPress.app.cycle && !MoldPress.app.lastPress && !MoldPress.app.state.running && !MoldPress.app.state.pressReplay && MoldPress.app.state.p.tray.length===0')
             report['checks'].append({'name':'Reset clears replay and pending production','status':'PASS'})
+            await page.wait_for_function('MoldPress.app.state.save!=="saving"')
+            await page.evaluate('MoldPress.app.setState({toast:""})')
+            await page.wait_for_timeout(150)
+            before = await page.evaluate('MoldPress.app.overlayUpdates')
+            await page.wait_for_timeout(400)
+            assert await page.evaluate('MoldPress.app.overlayUpdates') == before
+            await page.evaluate('MoldPress.app.view.az+=.1')
+            await page.wait_for_timeout(100)
+            assert await page.evaluate('MoldPress.app.overlayUpdates') > before
+            report['checks'].append({'name':'Idle overlays skip bounds and DOM updates; camera changes refresh them','status':'PASS'})
             assert not errors, errors
             report['checks'].append({'name': 'Section controls work without page errors in the live UI', 'status': 'PASS'})
             await page.screenshot(path=str(OUTPUT/'evidence/enhancements.png'))

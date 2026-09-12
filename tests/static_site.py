@@ -26,6 +26,9 @@ async def check(url):
             await page.wait_for_function('window.MoldPress?.app?.view && MoldPress.app.state.save==="saved"')
             await page.get_by_test_id('add-box').click()
             await page.wait_for_function('MoldPress.app.state.p.bodies.length===2')
+            await page.evaluate('MoldPress.app.generate(true)')
+            await page.wait_for_function('!MoldPress.app.state.busy')
+            assert await page.evaluate('MoldPress.app.state.p.bodies.every(b=>b.tool)')
             assert not errors,errors
             for file in runtime_files():
                 if file.name=='index.html':continue

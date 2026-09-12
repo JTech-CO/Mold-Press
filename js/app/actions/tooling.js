@@ -47,16 +47,20 @@
       if (!list.length) return;
       this.task(
         this.t('캐비티·코어와 금형 세트 생성 중', 'Generating cavity, core and tooling'),
-        () => {
-          const configs = new Map();
+        async () => {
+          const configs = new Map(),
+            items = [];
           for (const b of list) {
             const bb = M.bounds(M.world(b)),
               cfg = { ...this.state.p.parting, pins: 4, generated: true };
             const k = 'XYZ'.indexOf(cfg.axis);
             cfg.position = Math.max(bb.min[k], Math.min(bb.max[k], cfg.position));
-            M.makeTool(b, cfg);
+            items.push({ body: b, config: cfg });
             configs.set(b.id, cfg);
           }
+          const results = await this.geometryJob('tooling', { items });
+          for (const result of results) M.toolCache.set(result.key, result.tool);
+          while (M.toolCache.size > 80) M.toolCache.delete(M.toolCache.keys().next().value);
           this.edit(this.t('금형 생성 완료', 'Tooling generated'), (p) => {
             for (const b of p.bodies) if (configs.has(b.id)) b.tool = configs.get(b.id);
           });

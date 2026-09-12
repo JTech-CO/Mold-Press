@@ -10,7 +10,7 @@ Eight improvements are implemented and published in priority order. Each row lin
 | 4 | Process-specific machine and forming animation | Complete: 97 contracts, workflow/layout regressions and Three.js release checks |
 | 5 | Pause, stepping and replay without duplicate production | Complete: 99 enhancement contracts including pause, stepping, replay and reset |
 | 6 | Tool and machine component detail | Complete: 112 contracts for clearance, connections and labels |
-| 7 | Responsive geometry jobs and overlay updates | Pending |
+| 7 | Responsive geometry jobs and overlay updates | Complete: 117 contracts, built subdirectory worker and workflow checks |
 | 8 | Named projects and recovery history | Pending |
 
 ## 1. Section inspection / 단면 보기
@@ -54,3 +54,9 @@ Pause freezes the cycle clock. Next stage advances to the next process boundary 
 External guide posts use hollow bushes and mounting ears. Ejector pins share a moving plate with an 8 mm stroke; spacer rails leave clearance above the fixed platen. Cooling circuits include couplers and supply/return hoses. Injection nozzles connect to the transformed gate for X/Y/Z tooling. Enable Labels in Tooling or Press to identify visible components. These remain illustrative equipment assemblies, not manufacturing drawings.
 
 외부 가이드 포스트에 중공 부시와 장착부를 추가했습니다. 취출판과 핀은 함께 8 mm 이동하며 하부 스페이서가 이동 공간을 확보합니다. 냉각 커플러·공급/회수 호스와 파팅 축별 노즐 연결을 표시합니다. Tooling/Press의 부품명 옵션으로 구성 요소를 확인합니다.
+
+## 7. Geometry jobs / 연산 응답성
+
+HTTP(S) builds execute mold generation, boolean operations and capped splitting in a dedicated Worker. Batch progress and cancellation are available; successful results commit atomically after checking that the source project is still current. Worker errors leave the source intact. Local file mode preserves offline operation with yielding between batch items; an individual local operation can still block briefly. Idle overlays skip geometry bounds and DOM writes until the scene, camera or UI changes.
+
+HTTP(S)에서는 금형 생성·불리언·분할을 워커로 실행하고 진행률과 취소를 제공합니다. 완료 시 원본 프로젝트가 그대로인지 확인한 뒤 결과를 적용합니다. 디스크에서 직접 열면 배치 항목 사이에 양보하는 로컬 연산을 사용하며 개별 연산 중에는 잠시 화면이 멈출 수 있습니다. 유휴 상태에서는 불필요한 경계 계산과 오버레이 DOM 갱신을 생략합니다.

@@ -107,12 +107,12 @@
         );
         return;
       }
-      this.task(this.t('메쉬 불리언 계산 중', 'Computing mesh boolean'), () => {
+      this.task(this.t('메쉬 불리언 계산 중', 'Computing mesh boolean'), async () => {
         const ordered = this.state.selected
           .map((id) => bs.find((b) => b.id === id))
           .filter(Boolean);
-        let p = M.world(ordered[0]);
-        for (const b of ordered.slice(1)) p = M.csg(p, M.world(b), op);
+        const selectedIds = ordered.map((b) => b.id);
+        const p = await this.geometryJob('boolean', { bodies: ordered, op });
         if (p.length < 9 || M.volume(p) < 0.001)
           throw Error(
             this.t(
@@ -128,7 +128,7 @@
         this.edit(
           this.t('불리언 완료', 'Boolean complete'),
           (p) => {
-            p.bodies = p.bodies.filter((b) => !this.state.selected.includes(b.id));
+            p.bodies = p.bodies.filter((b) => !selectedIds.includes(b.id));
             p.bodies.push(body);
           },
           { selected: [body.id] }
@@ -185,8 +185,8 @@
         );
         return;
       }
-      this.task(this.t('바디를 조각으로 분할 중', 'Splitting the solid'), () => {
-        const halves = M.splitMesh(M.world(b), axis, position);
+      this.task(this.t('바디를 조각으로 분할 중', 'Splitting the solid'), async () => {
+        const halves = await this.geometryJob('split', { body: b, axis, position });
         if (halves.some((p) => p.length < 9 || M.volume(p) < 0.01))
           throw Error(
             this.t('파팅 위치를 바디 내부로 이동하세요.', 'Move the parting plane inside the body.')

@@ -6,6 +6,7 @@
     constructor(props) {
       super(props);
       M.AppActions.state.call(this, props);
+      M.AppActions.jobs.call(this, props);
       M.AppActions.history.call(this, props);
       M.AppActions.selection.call(this, props);
       M.AppActions.scene.call(this, props);
@@ -136,6 +137,7 @@
       if (this.state.toast) this.toastTimer = setTimeout(() => this.setState({ toast: '' }), 12000);
     }
     componentDidUpdate(prevProps, prev) {
+      this.overlayDirty = true;
       this.reconcileCad?.();
       if (prev.p.id !== this.state.p.id) {
         this.lastPress = null;
@@ -211,6 +213,7 @@
     componentWillUnmount() {
       if (this.state.exportFile) URL.revokeObjectURL(this.state.exportFile.url);
       this.cancelGizmo?.();
+      this.operation?.cancel?.();
       this.alive = false;
       this.view?.dispose();
       window.removeEventListener('keydown', this.keydown);

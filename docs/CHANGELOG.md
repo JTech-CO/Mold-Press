@@ -2,6 +2,8 @@
 
 ## Workspace improvements - 2026-09-12
 
+- Run tooling, booleans and splitting in cancellable workers; skip idle overlay recomputation.
+
 - Add guides, hollow bushes, ejector plate clearance, cooling fittings, connected nozzles and component labels.
 
 - Add pause/resume, process stepping and scrubbed replay without duplicate production.

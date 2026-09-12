@@ -51,15 +51,22 @@
       }));
     this.task = (name, fn) => {
       if (this.state.busy) return;
-      this.setState({ busy: name });
+      const operation = {};
+      this.operation = operation;
+      this.setState({ busy: name, jobProgress: 0, jobMode: null });
       setTimeout(async () => {
         try {
           await fn();
         } catch (e) {
-          console.error('Mold Press operation:', e);
-          this.notice(e.message || String(e));
+          if (e.name !== 'AbortError') {
+            console.error('Mold Press operation:', e);
+            this.notice(e.message || String(e));
+          }
         } finally {
-          if (this.alive) this.setState({ busy: false });
+          if (this.operation === operation) {
+            this.operation = null;
+            if (this.alive) this.setState({ busy: false, jobMode: null });
+          }
         }
       }, 40);
     };

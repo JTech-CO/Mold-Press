@@ -315,6 +315,28 @@
               null,
               React.createElement('span', { className: 'spinner' }),
               React.createElement('strong', null, s.busy),
+              s.jobMode &&
+                React.createElement(
+                  'div',
+                  { className: 'job-status', 'data-testid': 'job-status' },
+                  React.createElement('progress', { value: s.jobProgress, max: 100 }),
+                  React.createElement('span', null, s.jobProgress + '%'),
+                  React.createElement(
+                    'small',
+                    null,
+                    s.jobMode === 'worker'
+                      ? this.t('백그라운드 연산', 'Background processing')
+                      : this.t(
+                          '로컬 파일 모드: 개별 연산은 화면을 잠시 멈출 수 있습니다.',
+                          'Local file mode: individual operations may briefly block the view.'
+                        )
+                  ),
+                  React.createElement(
+                    'button',
+                    { className: 'btn', 'data-testid': 'cancel-job', onClick: this.cancelJob },
+                    this.t('연산 취소', 'Cancel operation')
+                  )
+                ),
               React.createElement(
                 'small',
                 null,

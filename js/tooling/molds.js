@@ -2,10 +2,11 @@
   'use strict';
   const V = M.V;
   M.toolCache = new Map();
+  M.toolKey = (b, cfg) => b.geo + JSON.stringify([b.pos, b.rot, b.scale, cfg]);
   M.makeTool = (b, config) => {
     const cfg = config ||
       b.tool || { axis: 'Z', position: M.bounds(M.world(b)).center[2], pins: 4 };
-    const key = b.geo + JSON.stringify([b.pos, b.rot, b.scale, cfg]);
+    const key = M.toolKey(b, cfg);
     if (M.toolCache.has(key)) return M.toolCache.get(key);
     const p = M.world(b),
       bb = M.bounds(p),

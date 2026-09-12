@@ -61,6 +61,29 @@ async () => {
     check('Progressive fill preserves volume '+axis+' '+q,Math.abs(M.volume(filled)-3840*q)<.01);
   }
   const app=MoldPress.app;
+  const wait=async(fn,timeout=15000)=>{const start=performance.now();while(!fn()){if(performance.now()-start>timeout)throw Error('Job timeout');await new Promise(r=>setTimeout(r,20));}};
+  if (/^https?:$/.test(location.protocol)) {
+    const project=M.newProject('new');
+    project.bodies=Array.from({length:6},(_,i)=>M.body('Complex '+i,M.torus(17,5,48,20)));
+    await new Promise(r=>app.setState({p:project,page:'studio',selected:[project.bodies[0].id]},r));
+    const original=JSON.stringify(app.state.p), undo=app.undoStack.length;
+    let beats=0;const heartbeat=setInterval(()=>beats++,10);
+    app.generate(true);
+    await wait(()=>app.state.jobMode==='worker');
+    await new Promise(r=>setTimeout(r,120));
+    app.cancelJob();await wait(()=>!app.state.busy);clearInterval(heartbeat);
+    check('Heavy tooling worker keeps UI responsive and cancels atomically',beats>=3 && JSON.stringify(app.state.p)===original && app.undoStack.length===undo);
+    const clean=M.newProject('new'), body=M.body('Worker box',M.box(20,16,12));clean.bodies=[body];
+    await new Promise(r=>app.setState({p:clean,selected:[body.id]},r));
+    app.generate(true);await wait(()=>!app.state.busy);
+    check('Worker tooling completes and seeds the display cache',app.state.p.bodies[0].tool && M.toolCache.has(M.toolKey(app.state.p.bodies[0],app.state.p.bodies[0].tool)));
+    let split, boolean;
+    app.task('Worker split contract',async()=>{split=await app.geometryJob('split',{body,axis:'Z',position:0});});await wait(()=>!app.state.busy);
+    check('Background capped split preserves volume',split.length===2 && Math.abs(split.reduce((v,p)=>v+M.volume(p),0)-3840)<.01);
+    app.task('Worker boolean contract',async()=>{boolean=await app.geometryJob('boolean',{bodies:[body,M.body('cut',M.box(10,8,20))],op:'subtract'});});await wait(()=>!app.state.busy);
+    check('Background boolean returns the expected closed solid',Math.abs(M.volume(boolean)-2880)<.01);
+  }
+
   for(const material of ['ABS','Aluminum 6061','Zinc']) {
     const project=M.newProject('new');
     const b=M.body('Cycle check',M.box(20,16,12),{material,tool:{axis:'Z',position:0,pins:4}});

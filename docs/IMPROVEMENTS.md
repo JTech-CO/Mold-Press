@@ -7,7 +7,7 @@ Eight improvements are implemented and published in priority order. Each row lin
 | 1 | Display-only capped X/Y/Z sections, opening gap, side-core direction correction | Complete: 35 enhancement checks, kernel and built-site checks passed |
 | 2 | Smooth curved surfaces and contact lighting | Complete: 41 contracts on local WebGL, Three.js and Canvas; kernel unchanged |
 | 3 | Material and machined-surface detail | Complete: 64 contracts on WebGL 2, WebGL 1, Three.js and Canvas |
-| 4 | Process-specific machine and forming animation | Pending |
+| 4 | Process-specific machine and forming animation | Complete: 97 contracts, workflow/layout regressions and Three.js release checks |
 | 5 | Pause, stepping and replay without duplicate production | Pending |
 | 6 | Tool and machine component detail | Pending |
 | 7 | Responsive geometry jobs and overlay updates | Pending |
@@ -34,3 +34,11 @@ Machined mold exteriors use fine directional grain; interior surfaces reduce the
 Select a PC body and enable **Clear PC** in the viewport toolbar. Three.js High uses a transmission material; the other paths use lightweight alpha transparency. This is a viewport preference and does not change saved geometry or export materials.
 
 금형 외곽의 가공면과 내부 연마면을 구분하고, 확대율에 따라 미세 무늬를 완화합니다. PC를 선택하면 뷰포트의 **PC 투명** 옵션을 사용할 수 있습니다. 투명 보기는 화면 설정이며 원본 형상과 내보내기 소재는 유지합니다.
+
+## 4. Material-driven processes / 소재별 공정
+
+Resins use a hollow hopper, pellet charge, injection ram and progressive cavity filling. Aluminum 6061 retains the illustrative blank-feeding/compression route with an additional forming stroke. Zinc uses a melt reservoir, injection flow and solidification stage. Material selection updates equipment, stage labels and charge geometry. Injection and casting keep the mold closed while filling.
+
+Progressive filling uses cached capped sections of the display mesh. Unsupported open meshes fade into view. The original mesh and final shrink calculation are unchanged. These are explanatory animations, not flow, thermal or load solvers.
+
+수지는 호퍼·펠릿·사출 램과 점진 충전, Aluminum 6061은 판재 투입과 압축, Zinc는 용탕 저장부·주입·응고를 표시합니다. 소재를 선택하면 설비와 단계 이름이 바뀝니다. 최종 제품 생성과 수축 계산은 유지하며 실제 유동·열·하중 해석은 수행하지 않습니다.

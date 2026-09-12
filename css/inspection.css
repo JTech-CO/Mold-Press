@@ -36,3 +36,12 @@
   font-size: 11px;
   white-space: nowrap;
 }
+
+.process-profile {
+  display: grid;
+  gap: 5px;
+}
+.process-profile small {
+  color: #9aa7b2;
+  line-height: 1.5;
+}

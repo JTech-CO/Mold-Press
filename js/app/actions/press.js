@@ -11,7 +11,9 @@
         m = M.pressMotion(progress, running),
         gap =
           machine.openGap * m.open +
-          (running && progress >= 0.16 && progress < 0.5 ? 8 * (1 - m.form) * (1 - m.open) : 0),
+          (machine.process === 'compression' && running && progress >= 0.16 && progress < 0.5
+            ? 8 * (1 - m.form) * (1 - m.open)
+            : 0),
         cutaway = s.xray || (running && progress >= 0.16 && progress < 0.88),
         z = machine.moldTop + gap + 7,
         rodBottom = z + 7,
@@ -37,16 +39,40 @@
       if (target) {
         const q = m.form,
           shrink = 1 - mat.shrink * m.cool;
-        rig.blank.pos = V.lerp(machine.feed, [0, 0, machine.partingZ + 3], m.feed);
-        rig.blank.scale = [1 - 0.08 * q, 1 - 0.08 * q, 1 - 0.65 * q];
+        rig.blank.pos = V.lerp(machine.charge, machine.chargeEnd, m.feed);
+        rig.blank.scale =
+          machine.process === 'compression'
+            ? [1 - 0.08 * q, 1 - 0.08 * q, 1 - 0.65 * q]
+            : [1, 1, Math.max(0.05, 1 - q)];
+        if (rig.flow) {
+          rig.flow.alpha = running && q > 0 && q < 1 ? 0.85 : 0;
+          rig.ram.pos[1] = -q * 18;
+        }
+        if (machine.process === 'casting')
+          rig.blank.color = V.lerp(M.hex(mat.color), [1, 0.53, 0.18], 0.55);
         rig.blank.alpha = s.hideProduct
           ? 0
           : (1 - q) * (mat.name === 'PC' && s.pcTransparent ? 0.42 : 1);
         rig.blank.transmission = mat.name === 'PC' && s.pcTransparent ? 0.75 : 0;
         if (rig.part) {
           const startScale = thickness / Math.max(0.01, machine.dims[2]);
-          rig.part.scale = [shrink, shrink, (startScale + (1 - startScale) * q) * shrink];
-          rig.part.pos = [0, 0, (machine.partingZ + 3) * (1 - q) + machine.datum * q + m.lift * 8];
+          rig.part.geo =
+            machine.process === 'compression'
+              ? rig.productGeo
+              : M.formingGeometry(rig.productGeo, machine.fillAxis, q);
+          rig.part.scale = [
+            shrink,
+            shrink,
+            (machine.process === 'compression' ? startScale + (1 - startScale) * q : 1) * shrink
+          ];
+          rig.part.pos = [
+            0,
+            0,
+            (machine.process === 'compression'
+              ? (machine.partingZ + 3) * (1 - q) + machine.datum * q
+              : machine.datum) +
+              m.lift * 8
+          ];
           if (m.eject > 0) {
             rig.part.pos = V.lerp([0, 0, machine.datum + 8], machine.tray, m.eject);
             rig.part.pos[2] += Math.sin(m.eject * Math.PI) * 24;
@@ -54,7 +80,11 @@
           rig.part.alpha = s.hideProduct
             ? 0
             : Math.min(1, q * 4) * (mat.name === 'PC' && s.pcTransparent ? 0.42 : 1);
-          rig.part.color = V.lerp(M.hex(mat.color), [0.95, 0.59, 0.27], (1 - m.cool) * 0.1);
+          rig.part.color = V.lerp(
+            M.hex(mat.color),
+            [0.95, 0.59, 0.27],
+            (1 - m.cool) * M.processes[machine.process].heat
+          );
         }
       }
       this.view?.invalidate();

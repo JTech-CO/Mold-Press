@@ -7,10 +7,24 @@
       const s = this.state,
         b = this.active(),
         ready = s.p.bodies.filter((b) => b.tool),
-        target = this.pressTarget();
+        target = this.pressTarget(),
+        profile = M.processProfile(b?.material);
       return React.createElement(
         React.Fragment,
         null,
+        React.createElement(
+          'section',
+          { className: 'process-profile', 'data-testid': 'process-profile' },
+          React.createElement('strong', null, this.t(...profile.name)),
+          React.createElement(
+            'small',
+            null,
+            this.t(
+              '소재에 따라 설비와 성형 표현이 바뀝니다.',
+              'Equipment and forming follow the selected material.'
+            )
+          )
+        ),
         React.createElement(
           'section',
           { className: 'press-tools-section', 'data-testid': 'press-mold-selector' },
@@ -184,8 +198,8 @@
             'p',
             null,
             this.t(
-              '판재 투입 → 프레스 성형은 간이 시각화입니다. 실제 수지 사출 공정·유동을 재현하지 않습니다. 성형 중 금형을 반투명 표시합니다.',
-              'Blank feeding and press forming are illustrative, not a physical resin injection or flow simulation. Tooling becomes translucent during forming.'
+              '소재별 투입·충전·압축·응고를 설명하는 간이 연출입니다. 실제 유동·온도·하중 해석은 아닙니다. 성형 중에는 금형을 반투명 표시합니다.',
+              'Feeding, filling, compression and solidification are illustrative. No flow, thermal or load analysis is performed. Tooling becomes translucent while forming.'
             )
           )
         )

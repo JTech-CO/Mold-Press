@@ -127,10 +127,14 @@
           const machineKey = JSON.stringify([
             tool.bb.size,
             tool.k,
-            tool.at - tool.bb.center[tool.k]
+            tool.at - tool.bb.center[tool.k],
+            M.processFor(target?.material)
           ]);
           if (!this.machineCache || this.machineCache.key !== machineKey)
-            this.machineCache = { key: machineKey, ...M.machine(tool) };
+            this.machineCache = {
+              key: machineKey,
+              ...M.machine(tool, M.processFor(target?.material))
+            };
           const machine = this.machineCache,
             moving = M.movingMachine(machine, machine.openGap);
           recs.push(...machine.records, ...moving);
@@ -158,14 +162,15 @@
                 rot: [0, 0, 0],
                 scale: [1, 1, 1]
               });
+              rig.productGeo = rig.part.geo;
               recs.push(rig.part);
             }
             rig.blank = M.record(
               'press-raw-panel',
-              M.box(machine.blankW, machine.blankD, rig.thickness),
+              M.processCharge(machine, rig.thickness),
               mat.color,
               {
-                pos: machine.feed.slice(),
+                pos: machine.charge.slice(),
                 rough: mat.rough,
                 metal: mat.metal,
                 surface: mat.surface,
@@ -174,6 +179,29 @@
               }
             );
             recs.push(rig.blank);
+            if (machine.process !== 'compression') {
+              const flowMesh = [];
+              for (let i = 1; i < machine.feedPath.length; i++)
+                flowMesh.push(...M.link(machine.feedPath[i - 1], machine.feedPath[i], 1.5, 10));
+              rig.flow = M.record(
+                'process-feed-flow',
+                flowMesh,
+                machine.process === 'casting' ? '#efa84b' : mat.color,
+                { alpha: 0, metal: 0.2, rough: 0.25 }
+              );
+              rig.ram = M.record(
+                'process-injection-ram',
+                M.link(
+                  [0, machine.d / 2 + 76, machine.datum],
+                  [0, machine.d / 2 + 103, machine.datum],
+                  2.8,
+                  16
+                ),
+                '#bac7cf',
+                { metal: 0.8 }
+              );
+              recs.push(rig.flow, rig.ram);
+            }
             for (const [i, tray] of s.p.tray.slice(-5).entries()) {
               const q = tray.part,
                 bb = M.bounds(M.unpack(q.geo)),

@@ -1,7 +1,7 @@
 (function (M) {
   'use strict';
   const V = M.V;
-  M.machine = (t) => {
+  M.machine = (t, process = 'injection') => {
     const dims =
         t.k === 2
           ? t.bb.size
@@ -91,7 +91,14 @@
     r.push(
       M.record(
         'machine-hopper',
-        M.translate(M.cylinder(5, 28, 24, 18), [0, d / 2 + 68, datum + 38]),
+        M.translate(
+          M.csg(
+            M.cylinder(5, 28, 24, 18),
+            M.translate(M.cylinder(3, 30, 24, 16), [0, 0, 1]),
+            'subtract'
+          ),
+          [0, d / 2 + 68, datum + 38]
+        ),
         '#b8c6cd',
         { metal: 0.72, rough: 0.23 }
       )
@@ -154,8 +161,53 @@
         '#bce6d3',
         { metal: 0 }
       );
+    const records = r.filter((item) => {
+      if (process !== 'compression' && item.id.startsWith('machine-feed-')) return false;
+      if (process === 'compression' && /barrel|heater|injection-drive|hopper/.test(item.id))
+        return false;
+      if (process === 'casting' && /hopper|heater/.test(item.id)) return false;
+      return true;
+    });
+    const charge =
+      process === 'compression'
+        ? [feedX, 0, feedZ]
+        : [0, d / 2 + 68, datum + (process === 'casting' ? 7 : 42)];
+    if (process === 'casting') {
+      records.push(
+        M.record(
+          'machine-melt-reservoir',
+          M.translate(M.cylinder(17, 22, 24), [0, d / 2 + 68, datum - 6]),
+          '#47515c',
+          { metal: 0.7, rough: 0.45 }
+        )
+      );
+      records.push(
+        M.record(
+          'machine-reservoir-rim',
+          M.translate(M.torus(16, 2, 24, 6), [0, d / 2 + 68, datum + 6]),
+          '#acb3b9',
+          { metal: 0.75 }
+        )
+      );
+      records.push(
+        M.record(
+          'machine-reservoir-base',
+          M.translate(M.box(42, 42, 10), [0, d / 2 + 68, datum - 22]),
+          '#36414c'
+        )
+      );
+    }
     return {
-      records: r,
+      records,
+      process,
+      charge,
+      chargeEnd: process === 'compression' ? [0, 0, partingZ + 3] : [0, d / 2 + 68, datum + 8],
+      fillAxis: t.k === 1 ? 0 : 1,
+      feedPath: [
+        [0, d / 2 + 48, datum],
+        [0, d / 2 + 8, partingZ],
+        [0, dims[1] / 2, partingZ]
+      ],
       tray,
       w,
       d,

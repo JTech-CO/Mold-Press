@@ -40,5 +40,35 @@ async () => {
     check('Finite material profile '+key,Array.from({length:20},(_,i)=>M.surfaceValue(i*.17,i*.23,i*.37,surface)).every(x=>Number.isFinite(x)&&Math.abs(x)<=1.01));
     check('Subpixel detail fades '+key,Math.abs(M.surfaceValue(1,2,3,surface,[0,0,1],3))<1e-6);
   }
+  for (const [material,process] of [['ABS','injection'],['Aluminum 6061','compression'],['Zinc','casting']]) {
+    const b=M.body('Process',M.box(20,16,12),{material,tool:{axis:'Y',position:0,pins:4}});
+    const machine=M.machine(M.makeTool(b),M.processFor(material));
+    const ids=machine.records.map(r=>r.id);
+    check(material+' selects its process',machine.process===process && M.processProfile(material).stages.every(s=>s.length===5));
+    check(material+' uses the correct feed equipment',process==='compression' ? ids.some(x=>x.startsWith('machine-feed-')) && !ids.some(x=>x==='machine-barrel') : ids.some(x=>x==='machine-barrel') && !ids.some(x=>x.startsWith('machine-feed-')));
+    check(material+' correct reservoir or hopper',process==='casting' ? ids.includes('machine-melt-reservoir')&&!ids.includes('machine-hopper') : process==='injection' ? ids.includes('machine-hopper') : !ids.includes('machine-hopper'));
+    check(material+' finite charge geometry',M.processCharge(machine,2).every(Number.isFinite));
+  }
+  for(const axis of [0,1,2])for(const q of [.25,.5,.75]) {
+    const filled=M.unpack(M.formingGeometry(box.geo,axis,q));
+    check('Progressive fill preserves volume '+axis+' '+q,Math.abs(M.volume(filled)-3840*q)<.01);
+  }
+  const app=MoldPress.app;
+  for(const material of ['ABS','Aluminum 6061','Zinc']) {
+    const project=M.newProject('new');
+    const b=M.body('Cycle check',M.box(20,16,12),{material,tool:{axis:'Z',position:0,pins:4}});
+    project.bodies=[b];
+    await new Promise(resolve=>app.setState({p:project,page:'press',selected:[b.id],pressTargetId:b.id,speed:8,sectionEnabled:false},resolve));
+    app.startPress(false);
+    await new Promise(resolve=>setTimeout(resolve,40));
+    const rig=app.pressRig;
+    app.applyPressMotion(.42,true);
+    check(material+' forming phase has valid bounds',rig.part && Array.from(M.unpack(rig.part.geo)).every(Number.isFinite));
+    check(material+' clamp matches the process',material==='Aluminum 6061' ? rig.moving[0].pos[2]>rig.machine.moldTop+7 : Math.abs(rig.moving[0].pos[2]-rig.machine.moldTop-7)<1e-6);
+    check(material+' feed follows its process',material==='Aluminum 6061' ? !rig.flow && rig.blank.scale[2]<1 : rig.flow.alpha>0);
+    const limit=performance.now()+15000;
+    while(app.state.running&&performance.now()<limit)await new Promise(resolve=>setTimeout(resolve,50));
+    check(material+' completes exactly one production cycle',!app.state.running && app.state.p.tray.length===1 && app.state.p.tray[0].material===material);
+  }
   return results;
 }

@@ -7,13 +7,8 @@
       const s = this.state,
         b = this.active(),
         bb = b ? M.bounds(M.world(b)) : null,
-        stages = [
-          this.t('투입 / 형폐', 'Load / clamp'),
-          this.t('프레스 성형', 'Press / form'),
-          this.t('보압 / 냉각', 'Pack / cool'),
-          this.t('형개', 'Open'),
-          this.t('취출', 'Eject')
-        ],
+        profile = M.processProfile(b?.material),
+        stages = profile.stages[s.lang === 'ko' ? 0 : 1],
         isModel = s.page === 'studio' || s.page === 'assembly';
       return React.createElement(
         'main',
@@ -508,10 +503,7 @@
                     React.createElement(
                       'span',
                       null,
-                      this.t(
-                        ['형폐', '성형', '냉각', '형개', '취출'][i],
-                        ['Close', 'Form', 'Cool', 'Open', 'Eject'][i]
-                      )
+                      this.t(profile.stages[0][i], profile.stages[1][i])
                     )
                   )
                 )

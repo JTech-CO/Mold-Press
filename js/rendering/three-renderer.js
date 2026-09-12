@@ -11,6 +11,9 @@
       this.renderer = new T.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
       this.renderer.setClearColor('#101419');
       this.renderer.outputColorSpace = T.SRGBColorSpace;
+      this.renderer.toneMapping = T.ACESFilmicToneMapping;
+      this.renderer.toneMappingExposure = 1.15;
+      this.renderer.shadowMap.type = T.PCFSoftShadowMap;
       this.scene = new T.Scene();
       this.environment = M.makeEnvironment(T, this.renderer);
       this.scene.environment = this.environment.texture;
@@ -22,11 +25,31 @@
       const b = new T.DirectionalLight(0xc7def3, 0.65);
       b.position.set(100, 100, 120);
       this.scene.add(a, b);
+      this.keyLight = a;
+      this.scene.add(a.target);
+      a.castShadow = true;
+      a.shadow.mapSize.set(1024, 1024);
+      a.shadow.normalBias = 0.12;
+      a.shadow.bias = -0.0001;
+      this.floor = new T.Mesh(new T.PlaneGeometry(1, 1), new T.ShadowMaterial({ opacity: 0.2 }));
+      this.floor.receiveShadow = true;
+      this.scene.add(this.floor);
       this.cache = new Map();
     }
     resize(w, h) {
-      this.renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.75));
+      this.renderer.setPixelRatio(
+        Math.min(
+          devicePixelRatio || 1,
+          this.quality === 'low' ? 1 : this.quality === 'high' ? 2 : 1.5
+        )
+      );
       this.renderer.setSize(w, h, false);
+      const high = this.quality === 'high';
+      if (this.renderer.shadowMap.enabled !== high) {
+        this.renderer.shadowMap.enabled = high;
+        for (const obj of this.cache.values()) obj.material.needsUpdate = true;
+      }
+      this.floor.visible = high;
       this.canvas.style.width = w + 'px';
       this.canvas.style.height = h + 'px';
     }
@@ -51,7 +74,13 @@
           }
           const g = new T.BufferGeometry();
           g.setAttribute('position', new T.Float32BufferAttribute(M.unpack(r.geo), 3));
-          if (!r.lines) g.computeVertexNormals();
+          if (!r.lines) {
+            g.setAttribute(
+              'normal',
+              new T.Float32BufferAttribute(M.shadingNormals(M.unpack(r.geo)), 3)
+            );
+            g.computeBoundingBox();
+          }
           const mat = r.lines
             ? new T.LineBasicMaterial({
                 color: new T.Color(...M.hex(r.color)).convertSRGBToLinear(),
@@ -105,7 +134,14 @@
           obj.material.metalness = r.metal ?? 0.3;
           obj.material.userData.surface.value.fromArray(r.surface || M.finishes.none);
         }
+        obj.castShadow = !r.lines && !r.helper && (r.alpha ?? 1) >= 0.99;
+        obj.receiveShadow = !r.lines && !r.helper;
         obj.material.opacity = r.alpha ?? 1;
+        const transparent = obj.material.opacity < 0.99;
+        if (obj.material.transparent !== transparent) {
+          obj.material.transparent = transparent;
+          obj.material.needsUpdate = true;
+        }
         obj.material.depthWrite = obj.material.opacity >= 0.99;
         obj.visible = obj.material.opacity > 0;
       }
@@ -116,6 +152,34 @@
           o.material.dispose();
           this.cache.delete(id);
         }
+      if (this.quality === 'high') {
+        const bounds = new T.Box3();
+        for (const obj of this.cache.values())
+          if (obj.castShadow) {
+            obj.updateMatrixWorld();
+            bounds.union(obj.geometry.boundingBox.clone().applyMatrix4(obj.matrixWorld));
+          }
+        if (!bounds.isEmpty()) {
+          const c = bounds.getCenter(new T.Vector3()),
+            size = bounds.getSize(new T.Vector3());
+          const span = Math.max(size.x, size.y, size.z, 40),
+            light = this.keyLight;
+          light.position.copy(c).add(new T.Vector3(-span, -span, span * 2));
+          light.target.position.copy(c);
+          light.target.updateMatrixWorld();
+          Object.assign(light.shadow.camera, {
+            left: -span,
+            right: span,
+            top: span,
+            bottom: -span,
+            near: 0.1,
+            far: span * 6
+          });
+          light.shadow.camera.updateProjectionMatrix();
+          this.floor.position.set(c.x, c.y, bounds.min.z - 0.12);
+          this.floor.scale.set(span * 3, span * 3, 1);
+        }
+      }
       this.renderer.render(this.scene, this.camera);
     }
     dispose() {
@@ -123,6 +187,9 @@
         o.geometry.dispose();
         o.material.dispose();
       }
+      this.floor.geometry.dispose();
+      this.floor.material.dispose();
+      this.keyLight.shadow.dispose();
       this.environment.dispose();
       this.renderer.dispose();
     }

@@ -64,7 +64,13 @@
       else document.head.appendChild(script);
     }
 
+    setQuality(quality) {
+      if (this.quality === quality) return;
+      this.quality = quality;
+      this.resize();
+    }
     resize() {
+      this.renderer.quality = this.quality || 'standard';
       this.lastStamp = null;
       this.w = Math.max(1, this.host.clientWidth);
       this.h = Math.max(1, this.host.clientHeight);
@@ -287,7 +293,7 @@
         this.lastStamp !== stamp ||
         this.lastRevision !== this.revision
       ) {
-        this.renderer.render(r, cam);
+        this.renderer.render([...M.contactShadows(this.records, this.quality), ...r], cam);
         this.lastRecords = this.records;
         this.lastStamp = stamp;
         this.lastRevision = this.revision;

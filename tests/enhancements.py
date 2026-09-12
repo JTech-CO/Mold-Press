@@ -19,10 +19,13 @@ async def run(url):
         page = await browser.new_page(viewport={'width': 1600, 'height': 1000})
         errors = []
         page.on('pageerror', lambda e: errors.append(str(e)))
-        await page.route('https://**/*', lambda r: r.abort())
+        if os.environ.get('MP_RENDERER') != 'three':
+            await page.route('https://**/*', lambda r: r.abort())
         try:
             await page.goto(url)
             await page.wait_for_function('window.MoldPress?.app?.view')
+            if os.environ.get('MP_RENDERER') == 'three':
+                await page.wait_for_function('MoldPress.app.state.engine.startsWith("Three.js")')
             report['checks'] = await page.evaluate((ROOT/'tests/enhancements.js').read_text(encoding='utf-8'))
             await page.get_by_test_id('tab-tooling').click()
             await page.get_by_test_id('section-enabled').check()
@@ -34,6 +37,14 @@ async def run(url):
             assert await page.evaluate('MoldPress.app.state.sectionAxis') == 'Y'
             assert await page.evaluate('MoldPress.app.state.toolGap') == 24
             await page.get_by_test_id('section-enabled').uncheck()
+            for quality in ['high', 'low', 'standard']:
+                await page.get_by_test_id('render-quality').select_option(quality)
+                await page.wait_for_timeout(250)
+                assert await page.evaluate('MoldPress.app.view.renderer.quality') == quality
+                if os.environ.get('MP_RENDERER') == 'three':
+                    assert await page.evaluate('MoldPress.app.view.renderer.renderer.shadowMap.enabled') == (quality == 'high')
+                    assert await page.evaluate('MoldPress.app.view.renderer.renderer.info.programs.every(p => p.diagnostics?.runnable !== false)')
+            report['checks'].append({'name': 'Quality switches render successfully including high-quality shadows where supported', 'status': 'PASS'})
             assert not errors, errors
             report['checks'].append({'name': 'Section controls work without page errors in the live UI', 'status': 'PASS'})
             await page.screenshot(path=str(OUTPUT/'evidence/enhancements.png'))

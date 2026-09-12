@@ -39,6 +39,7 @@
         b = this.active(),
         recs = [],
         pick = [];
+      this.view.setQuality(s.quality);
       this.view.grid = s.grid;
       this.view.measure = s.measure;
       try {

@@ -22,3 +22,9 @@
   line-height: 1.5;
   color: #9aa7b2;
 }
+
+.render-quality {
+  max-width: 100px;
+  font-size: 11px;
+  padding: 4px;
+}

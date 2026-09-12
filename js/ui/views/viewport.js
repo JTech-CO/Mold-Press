@@ -53,6 +53,23 @@
           React.createElement(
             'div',
             { className: 'toolbar-group right' },
+            React.createElement(
+              'select',
+              {
+                className: 'render-quality',
+                'aria-label': this.t('렌더링 품질', 'Rendering quality'),
+                'data-testid': 'render-quality',
+                value: s.quality,
+                onChange: (e) => this.setState({ quality: e.target.value })
+              },
+              [
+                ['low', '성능', 'Fast'],
+                ['standard', '표준', 'Standard'],
+                ['high', '고품질', 'High']
+              ].map(([value, ko, en]) =>
+                React.createElement('option', { key: value, value }, this.t(ko, en))
+              )
+            ),
             React.createElement(Button, {
               icon: 'grid',
               active: s.grid,

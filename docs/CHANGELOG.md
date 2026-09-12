@@ -2,6 +2,7 @@
 
 ## Workspace improvements - 2026-09-12
 
+- Add crease-preserving render normals, contact shading and Fast/Standard/High quality controls across renderers.
 - Add display-only capped sections and mold opening-gap controls.
 - Correct side-core movement for every parting axis and press coordinate conversion.
 - Track the eight implementation stages in [IMPROVEMENTS.md](IMPROVEMENTS.md).

@@ -56,7 +56,10 @@
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     }
     resize(w, h) {
-      const ratio = Math.min(devicePixelRatio || 1, 1.75);
+      const ratio = Math.min(
+        devicePixelRatio || 1,
+        this.quality === 'low' ? 1 : this.quality === 'high' ? 2 : 1.5
+      );
       this.canvas.width = Math.round(w * ratio);
       this.canvas.height = Math.round(h * ratio);
       this.canvas.style.width = w + 'px';
@@ -90,7 +93,7 @@
         let c = this.cache.get(key);
         if (!c) {
           const p = M.unpack(r.geo),
-            n = r.lines ? new Float32Array(p.length).fill(1) : M.normals(p);
+            n = r.lines ? new Float32Array(p.length).fill(1) : M.shadingNormals(p);
           c = { pos: gl.createBuffer(), normal: gl.createBuffer(), count: p.length / 3 };
           gl.bindBuffer(gl.ARRAY_BUFFER, c.pos);
           gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(p), gl.STATIC_DRAW);

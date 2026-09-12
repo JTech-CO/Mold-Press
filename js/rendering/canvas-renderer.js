@@ -7,7 +7,10 @@
       const c = this.ctx,
         W = this.canvas.width,
         H = this.canvas.height,
-        ratio = Math.min(1, 850 / W),
+        ratio = Math.min(
+          1,
+          (this.quality === 'low' ? 600 : this.quality === 'high' ? 1100 : 850) / W
+        ),
         w = Math.max(1, Math.round(W * ratio)),
         h = Math.max(1, Math.round(H * ratio));
       if (!this.soft || this.soft.width !== w || this.soft.height !== h) {
@@ -51,6 +54,17 @@
           lines.push({ r, wp });
           continue;
         }
+        const renderNormals = M.shadingNormals(M.unpack(r.geo));
+        const normalAt = (index) => {
+          const sc = r.scale || [1, 1, 1];
+          let n = V.unit(
+            M.rotate(
+              Array.from(renderNormals.slice(index, index + 3)).map((x, k) => x / (sc[k] || 0.001)),
+              r.rot || [0, 0, 0]
+            )
+          );
+          return V.dot(n, cam.forward) > 0 ? V.mul(n, -1) : n;
+        };
         const col = M.hex(r.color),
           local = r.surface?.[0] ? M.unpack(r.geo) : null;
         for (let i = 0; i < wp.length; i += 9) {
@@ -73,6 +87,17 @@
           const v = [a, b, d].map(projection);
           tris.push({
             v,
+            colors: [0, 3, 6].map((j) => {
+              const n = normalAt(i + j);
+              const light =
+                0.38 +
+                0.48 * Math.max(0, V.dot(n, lit)) +
+                0.2 * Math.max(0, V.dot(n, V.unit([0.8, 0.2, 0.6])));
+              const spec =
+                Math.pow(Math.max(0, V.dot(n, half)), 110 * (1 - rough) + 8 * rough) *
+                (0.1 + 0.34 * metal);
+              return col.map((x) => Math.min(255, (x * light + spec) * 255));
+            }),
             surface: r.surface,
             local: local ? local.slice(i, i + 9) : null,
             col: col.map((x) => Math.min(255, (x * light + spec) * 255)),
@@ -115,7 +140,11 @@
                 ) * t.surface[1];
             }
             for (let ch = 0; ch < 3; ch++)
-              pix[off + ch] = t.col[ch] * finish * t.alpha + pix[off + ch] * (1 - t.alpha);
+              pix[off + ch] =
+                (u * t.colors[0][ch] + v * t.colors[1][ch] + k * t.colors[2][ch]) *
+                  finish *
+                  t.alpha +
+                pix[off + ch] * (1 - t.alpha);
             if (t.alpha >= 0.98) zbuf[index] = z;
           }
       }

@@ -27,6 +27,7 @@ jobs:
       - run: python tests/static_site.py
       - run: python tests/browser_workflow.py
       - run: python tests/storage_tests.py
+      - run: python tests/library_tests.py
       - run: python tests/press_selection_edges.py
       - run: python tests/release_smoke.py
       - run: python tests/release_smoke.py

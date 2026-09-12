@@ -1,53 +1,53 @@
 # Verification / 검증 결과
 
-Baseline version **1.1.1** · 2026-09-08
+Release **1.2.0** · 2026-09-12
 
-This record covers the original release. Subsequent feature work and its checks are tracked in [IMPROVEMENTS.md](IMPROVEMENTS.md) and GitHub CI.
+All reports below passed against the same complete runtime fingerprint. The eight implemented improvements and their usage are described in [IMPROVEMENTS.md](IMPROVEMENTS.md).
 
-## Runtime structure / 실행 구조
+## Runtime / 실행 구조
 
-- `index.html`: 6,363 bytes (previous single-file HTML: 490,351 bytes).
-- 81 JavaScript files, including two preserved vendor files.
-- 13 CSS files, preserving original cascade order.
-- Source is loaded directly from `js/` and `css/`; no inline application scripts or styles.
+- `index.html`: 7,233 bytes.
+- 94 external JavaScript files and 15 CSS files.
+- Ordered classic scripts preserve direct HTML opening; HTTP(S) enables geometry workers.
+- Project schema and the existing localStorage key remain version 1.
 
-Complete runtime SHA-256: `f3ae29d1c917ec25e2d655c6ef3fa7091de173c44563fe223b3d828c07ee388b`
+Complete runtime SHA-256: `b67f2546fa06fe073fd0e0ff985fbb8f5b6945943389ea01b3b520e7d2e3b16f`
 
-This fingerprint includes the entry HTML and the relative path and contents of every referenced JS/CSS file. It is not an HTML-only checksum.
-
-체크섬은 HTML뿐 아니라 실행에 필요한 모든 JS/CSS의 상대 경로와 내용을 포함합니다.
+The fingerprint includes HTML and every runtime JS/CSS path and byte, including worker dependencies. 체크섬은 HTML·JS·CSS와 워커 의존성의 경로 및 내용을 모두 포함합니다.
 
 ## Checks / 검사
 
 | Suite | Checks | Result |
 | --- | ---: | --- |
-| External JS syntax and asset references | 81 | PASS |
-| Pre-refactor geometry/sketch/mate signatures | 14 | PASS |
-| Built site under an HTTP subdirectory | 2 | PASS |
+| JavaScript syntax and asset references | 94 | PASS |
+| Sections, rendering, processes, playback, components and worker behavior | 117 | PASS |
+| Real-origin project library, history, recovery and storage failures | 12 | PASS |
+| Pre-refactor geometry, sketch and mate signatures | 14 | PASS |
 | Press, reset, assembly and six KR/EN layouts | 11 | PASS |
-| Storage-double asynchronous race guards | 6 | PASS |
+| Asynchronous storage race guards | 6 | PASS |
 | Ready-mold selection edges | 3 | PASS |
-| Real-origin workflow / local WebGL | 7 | PASS |
-| Real-origin workflow / Canvas 3D | 7 | PASS |
-| Real-origin workflow / Three.js r152 | 7 | PASS |
+| Built HTTP subdirectory assets, editing and worker execution | 2 | PASS |
+| Real-origin workflow and downloads / local WebGL | 7 | PASS |
+| Real-origin workflow and downloads / Canvas | 7 | PASS |
+| Real-origin workflow and downloads / Three.js r152 | 7 | PASS |
 
-Formatting: `npm run format:check` passed. The built `/site/` application fetched every external asset successfully and performed an edit. Kernel signatures compare mesh hashes, dimensions, volume, feature regeneration and mate transforms against the pre-refactor 1.1.0 release.
+Formatting and asset-reference checks passed. Kernel signatures remain identical to the pre-refactor baseline. The enhancement checks verify capped volumes, all parting axes, equipment selection, real production cycles, replay without duplicate parts, ejector clearance, connected nozzles, worker cancellation and idle overlay behavior. Library checks use real IndexedDB and localStorage in an isolated HTTP origin, including reload, quota failures, invalid revisions and reset recovery.
 
-포매팅 검사, 배포 폴더의 하위 경로 로딩 및 편집 검사가 통과했습니다. 커널 회귀는 분리 전 1.1.0과 메쉬 해시·치수·체적·피처 재생성·Mate 변환을 비교했습니다.
+추가 기능 117개, 실제 브라우저 저장소 검사 12개가 통과했습니다. 저장 이력은 실제 IndexedDB로 검사했고, 초기화 경합 검사는 별도의 명시적 Storage 테스트 대역으로 검증했습니다. 모든 검사는 격리된 브라우저에서 실행하며 사용자의 실제 작업 저장소를 변경하지 않습니다.
 
-## Environment / 환경
+## Environment and scope / 환경과 범위
 
-Windows 11, Python 3.14, Node.js 25.9, Playwright 1.58.0, headless Chromium with software WebGL; separate Canvas-only run. Three.js uses the existing optional 0.152.2 CDN dependency. Browser workflows use the actual external-file entrypoint or local HTTP. Only the explicit Storage-double suite assembles an in-memory inline test document to isolate storage races.
+Windows 11, Python 3.14, Node.js 25.9, Playwright 1.58.0 and headless Chromium with software WebGL. Local WebGL, Canvas and the pinned Three.js 0.152.2 renderer each completed the release workflow. The earlier material-specific work also exercised WebGL 1 and high-quality transmission; its scope is recorded in IMPROVEMENTS.md. These results do not certify physical GPU variants, other browser engines or manufacturing accuracy.
 
-The table records local verification. The GitHub CI workflow repeats the offline checks on push; the optional CDN renderer is verified locally. Physical GPU variants and other browser engines remain outside the recorded scope.
+Direct-file geometry jobs retain a local fallback that can block during an individual computation. HTTP(S) workers provide responsive heavy operations. Browser site-data deletion removes project archives; JSON is the portable backup. The original user-provided documentation images remain unchanged.
 
-## Visual review / 화면
+## Visual review / 화면 확인
 
-![Press](images/press.png)
+![Detailed components](images/components-1.2.png)
 
-![Tooling](images/tooling.png)
+![Paused replay](images/playback-1.2.png)
 
-![Canvas fallback](images/canvas.png)
+![Project library](images/library-1.2.png)
 
 ## Reproduce / 재현
 
@@ -60,4 +60,4 @@ npm run format:check
 python package.py
 ```
 
-Reports are written to `tests/output/` and copied into release ZIPs under `verification/`. The previous release and its original QA are preserved in `archive/v1.1.0/`.
+Packaging requires current passing reports, writes app/source ZIPs under `dist/`, includes the MIT license and embeds the reports under `verification/`. GitHub CI repeats the offline checks on push. The configured Pages site publishes the `main` branch root automatically; the manual deployment workflow remains optional for Actions-based Pages installations.

@@ -1,19 +1,19 @@
 # Changelog
 
-## Workspace improvements - 2026-09-12
+## 1.2.0 - 2026-09-12
 
+- Add named project copies, five-save revision history, storage usage, validated recovery and quota fallback.
+- Handle worker entry URLs in isolated storage-test documents.
 - Run tooling, booleans and splitting in cancellable workers; skip idle overlay recomputation.
-
 - Add guides, hollow bushes, ejector plate clearance, cooling fittings, connected nozzles and component labels.
-
 - Add pause/resume, process stepping and scrubbed replay without duplicate production.
-
 - Connect material process metadata to injection, compression and casting equipment and forming paths.
 - Add filtered directional finishes, polished mold interiors, GPU micro-bumps and optional clear PC.
 - Add crease-preserving render normals, contact shading and Fast/Standard/High quality controls across renderers.
 - Add display-only capped sections and mold opening-gap controls.
 - Correct side-core movement for every parting axis and press coordinate conversion.
 - Track the eight implementation stages in [IMPROVEMENTS.md](IMPROVEMENTS.md).
+
 
 ## 1.1.1 - 2026-09-08
 

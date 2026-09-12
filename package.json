@@ -1,6 +1,6 @@
 {
   "name": "mold-press",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "private": true,
   "description": "Development tools for the modular Mold Press browser app",
   "scripts": {

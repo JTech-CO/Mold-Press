@@ -8,6 +8,7 @@
       M.AppActions.state.call(this, props);
       M.AppActions.jobs.call(this, props);
       M.AppActions.history.call(this, props);
+      M.AppActions.library.call(this, props);
       M.AppActions.selection.call(this, props);
       M.AppActions.scene.call(this, props);
       M.AppActions.dimensions.call(this, props);
@@ -138,6 +139,10 @@
     }
     componentDidUpdate(prevProps, prev) {
       this.overlayDirty = true;
+      if (prev.modal !== 'samples' && this.state.modal === 'samples') {
+        this.setState({ libraryName: this.state.p.name, libraryDelete: null });
+        this.refreshLibrary();
+      }
       this.reconcileCad?.();
       if (prev.p.id !== this.state.p.id) {
         this.lastPress = null;

@@ -11,7 +11,7 @@ Eight improvements are implemented and published in priority order. Each row lin
 | 5 | Pause, stepping and replay without duplicate production | Complete: 99 enhancement contracts including pause, stepping, replay and reset |
 | 6 | Tool and machine component detail | Complete: 112 contracts for clearance, connections and labels |
 | 7 | Responsive geometry jobs and overlay updates | Complete: 117 contracts, built subdirectory worker and workflow checks |
-| 8 | Named projects and recovery history | Pending |
+| 8 | Named projects and recovery history | Complete: 12 real-origin library checks; all 11 release suites passed |
 
 ## 1. Section inspection / 단면 보기
 
@@ -60,3 +60,9 @@ External guide posts use hollow bushes and mounting ears. Ejector pins share a m
 HTTP(S) builds execute mold generation, boolean operations and capped splitting in a dedicated Worker. Batch progress and cancellation are available; successful results commit atomically after checking that the source project is still current. Worker errors leave the source intact. Local file mode preserves offline operation with yielding between batch items; an individual local operation can still block briefly. Idle overlays skip geometry bounds and DOM writes until the scene, camera or UI changes.
 
 HTTP(S)에서는 금형 생성·불리언·분할을 워커로 실행하고 진행률과 취소를 제공합니다. 완료 시 원본 프로젝트가 그대로인지 확인한 뒤 결과를 적용합니다. 디스크에서 직접 열면 배치 항목 사이에 양보하는 로컬 연산을 사용하며 개별 연산 중에는 잠시 화면이 멈출 수 있습니다. 유휴 상태에서는 불필요한 경계 계산과 오버레이 DOM 갱신을 생략합니다.
+
+## 8. Project library / 프로젝트 보관함
+
+Projects supports naming, saving separate copies, opening saved projects, confirmed deletion and restoring the latest five revisions. Compressed snapshots live in IndexedDB; existing localStorage autosave remains supported. The library shows stored snapshot bytes and the browser site quota estimate when available. Restoration validates saved data and preserves the previous workspace first. Corrupt current data or localStorage quota failures can recover from the latest valid library save. Browser site-data deletion removes both stores; JSON remains the portable backup.
+
+프로젝트 메뉴에서 이름 저장·별도 사본·열기·삭제 확인·최근 5개 저장 이력 복원을 제공합니다. IndexedDB 보관함과 기존 자동 저장을 함께 사용하며 보관 데이터와 사이트 용량을 표시합니다. 복원할 데이터는 검증하고 현재 작업을 먼저 보관합니다. 현재 저장값이 손상되거나 localStorage가 가득 찬 경우 보관함에서 복구합니다. 사이트 데이터 삭제 시 보관함도 삭제되므로 JSON 백업을 유지하세요.

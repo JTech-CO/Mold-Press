@@ -15,6 +15,7 @@
       );
     this.resetProject = () => {
       if (this.state.busy || this.state.modal !== 'reset') return;
+      M.library.save(this.state.p).catch(() => {});
       this.workspaceEpoch = (this.workspaceEpoch || 0) + 1;
       this.pressEpoch = (this.pressEpoch || 0) + 1;
       this.saveSerial++;

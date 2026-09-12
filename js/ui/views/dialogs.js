@@ -74,7 +74,7 @@
       if (!s.modal) return null;
       const title = {
         reset: this.t('초기화 하시겠습니까?', 'Reset the entire project?'),
-        samples: this.t('프로젝트 시작', 'Start a project'),
+        samples: this.t('프로젝트 보관함', 'Project library'),
         export: this.t('내보내기', 'Export your work'),
         share: this.t('프로젝트 복제 링크', 'Project clone link'),
         text: this.t('텍스트 · 솔리드 / 각인', 'Text · solid / engraving'),
@@ -162,6 +162,7 @@
             React.createElement(
               React.Fragment,
               null,
+              this.renderLibrary(),
               React.createElement(
                 'div',
                 { className: 'sample-cards' },
@@ -217,8 +218,8 @@
                   'p',
                   { className: 'muted' },
                   this.t(
-                    '기존 작업으로 돌아가려면 실행취소(Ctrl+Z)를 사용하세요.',
-                    'Use Undo (Ctrl+Z) to return to your previous project.'
+                    '샘플 열기는 실행취소할 수 있습니다. 보관 프로젝트는 저장 이력으로 복원하세요.',
+                    'Sample opening supports Undo. Use save history to restore library projects.'
                   )
                 ),
                 React.createElement(

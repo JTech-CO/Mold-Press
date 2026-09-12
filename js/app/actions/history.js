@@ -15,9 +15,32 @@
       this.setState({ save: 'saving' });
       this.saveTimer = setTimeout(async () => {
         try {
-          const data = await M.compress(JSON.stringify(this.state.p));
+          const snapshot = this.state.p;
+          const data = await M.compress(JSON.stringify(snapshot));
           if (serial !== this.saveSerial) return;
-          localStorage.setItem(M.STORAGE, data);
+          let localError = null,
+            archived = false;
+          try {
+            localStorage.setItem(M.STORAGE, data);
+          } catch (e) {
+            localError = e;
+          }
+          try {
+            archived = await M.library.save(snapshot, {
+              active: true,
+              isCurrent: () => serial === this.saveSerial && this.alive
+            });
+          } catch (e) {
+            if (this.alive && serial === this.saveSerial)
+              this.setState({
+                libraryError: this.t(
+                  '보관함 저장 실패. JSON으로 백업하세요.',
+                  'Library save failed. Export JSON for backup.'
+                )
+              });
+          }
+          if (serial !== this.saveSerial) return;
+          if (localError && !archived) throw localError;
           if (this.alive) this.setState({ save: 'saved' });
         } catch (e) {
           if (this.alive && serial === this.saveSerial) {

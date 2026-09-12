@@ -29,7 +29,7 @@
                 'strong',
                 null,
                 'MOLD PRESS',
-                React.createElement('span', { className: 'preview-tag' }, 'v1.1')
+                React.createElement('span', { className: 'preview-tag' }, 'v1.2')
               ),
               React.createElement('small', null, 'BROWSER MANUFACTURING LAB')
             )

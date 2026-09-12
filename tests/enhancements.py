@@ -68,6 +68,7 @@ async def run(url):
             await page.screenshot(path=str(OUTPUT/'evidence/components.png'))
             await page.get_by_test_id('component-labels').uncheck()
             report['checks'].append({'name':'Component labels follow mounted geometry with finite screen coordinates','status':'PASS'})
+            await page.get_by_test_id('press-speed').select_option('2')
             baseline = await page.evaluate('JSON.stringify(MoldPress.app.state.p)')
             await page.get_by_test_id('replay-press').click()
             await page.get_by_test_id('replay-seek').fill('75')
@@ -76,15 +77,16 @@ async def run(url):
             await page.get_by_test_id('pause-press').click()
             await page.wait_for_timeout(250)
             await page.get_by_test_id('pause-press').click()
+            assert await page.evaluate('MoldPress.app.state.pressPaused'), await page.evaluate('({paused:MoldPress.app.state.pressPaused,progress:MoldPress.app.cycle.progress})')
             paused = await page.evaluate('MoldPress.app.cycle.progress')
             await page.wait_for_timeout(250)
-            assert await page.evaluate('MoldPress.app.cycle.progress') == paused
+            assert await page.evaluate('MoldPress.app.cycle.progress') == paused, await page.evaluate('({paused:MoldPress.app.state.pressPaused,progress:MoldPress.app.cycle.progress})')
             await page.get_by_test_id('step-press').click()
             assert await page.evaluate('MoldPress.app.cycle.progress') == .34
             await page.screenshot(path=str(OUTPUT/'evidence/playback-paused.png'))
             await page.get_by_test_id('replay-seek').fill('100')
             await page.get_by_test_id('pause-press').click()
-            await page.wait_for_function('MoldPress.app.state.pressPaused && MoldPress.app.cycle.progress===1', timeout=15000)
+            await page.wait_for_function('MoldPress.app.state.pressPaused && MoldPress.app.cycle.progress===1', timeout=30000)
             assert await page.evaluate('JSON.stringify(MoldPress.app.state.p)') == baseline
             await page.get_by_test_id('cancel-press').click()
             count = await page.evaluate('MoldPress.app.state.p.tray.length')

@@ -31,6 +31,16 @@ The built-in WebGL renderer works without network access. When available, the ap
 
 To try the supplied sample: **split the body → Tooling → generate all molds → Press → choose a material → press all → Assembly → auto assemble**. Selecting a ready mold targets exactly that body, even if its source belongs to a group. Batch transitions preserve your zoom, orbit and pan; **F** explicitly fits the view.
 
+## Inspection and playback
+
+Tooling supports capped X/Y/Z sections, cut position/reversal and adjustable opening gaps. Amber cut faces affect the view only; original and exported geometry stay intact. Guides, hollow bushes, moving ejector plates, cooling fittings and axis-aware nozzle connections have optional component labels.
+
+Choose Fast, Standard or High viewport quality. Curved normals and contact shading improve shape readability; Three.js High adds dynamic shadows and PC transmission. Materials select illustrative injection, compression or casting equipment and stage labels.
+
+Pause/resume or advance to the next stage during production. **Replay last completed cycle** uses the original completed shape and material and supports scrubbing without adding parts to the tray. Replay lasts for the current session.
+
+HTTP(S) runs tooling, booleans and splitting in background workers with progress and cancellation. Direct disk opening uses local computation; individual operations can briefly block the view.
+
 ## Materials and visual finishes
 
 | Material | Viewport appearance |
@@ -58,9 +68,11 @@ Molds use a machined steel finish. The press includes coated panels, polished ro
 
 GLB export includes base material colors and metallic/roughness values. The procedural viewport grain and press animation are not baked into exported files. Files over 20 MB are rejected on import; mesh and project capacity limits also apply.
 
-Projects autosave to the current browser/site storage. **Export JSON** for a portable backup. The **Share** action creates a clone snapshot link for the same browser and site storage; it is not a cloud link and does not transfer a project to another device. Send the JSON file to share across devices.
+Use **Projects** to name and save the current project or keep a separate copy. Each project retains its latest five saves, with restore actions and storage usage. Opening a project or revision first preserves the current workspace. Deleting a saved project asks you to confirm removal of its history.
 
-**Reset** asks for confirmation, clears the current project and undo/redo history, and opens an empty Studio. A running press pauses while confirmation is open. Cancel resumes it. Reset preserves the current UI language and independent clone snapshots; it cannot be undone.
+Projects autosave to localStorage and an IndexedDB library in the current browser/site. Corrupt current data or exhausted localStorage can recover from the latest valid library save. Clearing browser site data also clears this library. **Export JSON** for a portable backup. The **Share** action creates a clone snapshot link for the same browser and site storage; it is not a cloud link and does not transfer a project to another device. Send the JSON file to share across devices.
+
+**Reset** asks for confirmation, clears the current project and undo/redo history, and opens an empty Studio. A running press pauses while confirmation is open. Cancel resumes it. Reset preserves the current UI language and independent clone snapshots, and archives the preceding project when storage is available; it cannot be undone.
 
 ## Controls
 
@@ -79,7 +91,7 @@ Projects autosave to the current browser/site storage. **Export JSON** for a por
 
 ## Development
 
-**Version: 1.1.1.** The application now runs from a small `index.html` plus functional modules in `js/` and `css/`. Project schema/storage remain version 1, preserving compatibility with the supplied Fix 6 project files.
+**Version: 1.2.0.** The application now runs from a small `index.html` plus functional modules in `js/` and `css/`. Project schema/storage remain version 1, preserving compatibility with the supplied Fix 6 project files.
 
 Edit `js/` and `css/`, then reload the browser. See the [module guide](docs/ARCHITECTURE.md) for file responsibilities. With Python 3.10 or later, validate references or copy a deployable static folder:
 
@@ -94,6 +106,8 @@ The build uses only the Python standard library and copies the runtime files to 
 python -m pip install -r tests/requirements.txt
 python -m playwright install chromium
 python tests/check_syntax.py
+python tests/enhancements.py
+python tests/library_tests.py
 python tests/kernel_contract.py
 python tests/static_site.py
 python tests/browser_workflow.py
@@ -133,9 +147,9 @@ Commit `js/`, `css/`, `index.html`, scripts, tests and documentation to your rep
 python package.py
 ```
 
-This creates `dist/Mold-Press-1.1.1.zip` (app with its JS/CSS folders), `dist/Mold-Press-1.1.1-source.zip` (editable sources and tests), and SHA-256 checksums. Packaging requires successful reports for the current HTML and all referenced JS/CSS files and excludes generated test output and the historical archive.
+This creates `dist/Mold-Press-1.2.0.zip` (app with its JS/CSS folders), `dist/Mold-Press-1.2.0-source.zip` (editable sources and tests), and SHA-256 checksums. Packaging requires successful reports for the current HTML and all referenced JS/CSS files and excludes generated test output and the historical archive.
 
-For GitHub Pages, set **Settings → Pages → Build and deployment → Source: GitHub Actions**, then manually run the included **Deploy GitHub Pages** workflow. It publishes the application HTML, JS/CSS folders and third-party notices from `dist/site/`. The included workflow requires manual dispatch to publish the site. See the [official GitHub Pages guide](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site).
+This repository currently publishes the `main` branch root automatically to [GitHub Pages](https://jtech-co.github.io/Mold-Press/) after pushes. The separate **Deploy GitHub Pages** workflow is an optional manual path for installations configured to use GitHub Actions as their Pages source; it publishes `dist/site/`. See the [official GitHub Pages guide](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site).
 
 ## Scope and attribution
 

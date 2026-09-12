@@ -11,7 +11,7 @@ SOURCE=ROOT/'index.html'
 VERSION=json.loads((ROOT/'package.json').read_text(encoding='utf-8'))['version']
 files=runtime_files()
 digest=fingerprint()
-required=['syntax','kernel','deployment','browser','storage','selection-edge','release-local','release-canvas']
+required=['syntax','enhancements','library','kernel','deployment','browser','storage','selection-edge','release-local','release-canvas']
 reports={}
 for key in required:
     path=ROOT/'tests/output'/f'{key}-results.json'
@@ -41,7 +41,7 @@ for suffix,files in [('',portable),('-source',editable)]:
     target=dist/f'Mold-Press-{VERSION}{suffix}.zip'
     with zipfile.ZipFile(target,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as bundle:
         for path in sorted(set(files)):
-            info=zipfile.ZipInfo(path.relative_to(ROOT).as_posix(),date_time=(2026,9,8,0,0,0))
+            info=zipfile.ZipInfo(path.relative_to(ROOT).as_posix(),date_time=(2026,9,12,0,0,0))
             info.compress_type=zipfile.ZIP_DEFLATED
             info.external_attr=0o644<<16
             bundle.writestr(info,path.read_bytes())

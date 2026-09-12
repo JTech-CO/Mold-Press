@@ -50,7 +50,7 @@ js/
 
 ## 로딩과 의존성 / Loading and dependencies
 
-모든 파일은 `index.html`의 `<script defer src="…">` 순서로 실행됩니다. ES module이나 동적 파일 로더 없이 기존 `window.MP` 네임스페이스를 유지하므로 로컬 HTML 직접 열기도 지원합니다. 각 파일은 독립 함수 범위로 감싸져 있어 내부 변수가 전역에 흩어지지 않습니다.
+모든 파일은 `index.html`의 `<script defer src="…">` 순서로 실행됩니다. 페이지는 ES module 없이 기존 `window.MP` 네임스페이스를 유지하므로 로컬 HTML 직접 열기도 지원합니다. 각 파일은 독립 함수 범위로 감싸져 있어 내부 변수가 전역에 흩어지지 않습니다.
 
 1. React 런타임과 `core/namespace.js`를 로드합니다.
 2. 형상·프로젝트·소재·렌더러·스케치·Mate 기능을 등록합니다.
@@ -104,3 +104,19 @@ python build.py
 `dist/site/`에는 HTML과 필요한 `js/`, `css/`, 라이브러리 고지가 함께 생성됩니다. 배포나 파일 전달 시 세 항목을 같은 상대 경로로 유지하세요. ZIP 패키징과 GitHub Pages 워크플로도 이 구조를 사용합니다.
 
 `archive/v1.1.0/`에는 분리 전 버전이 보존되어 있습니다. 개발 대상은 현재 루트의 `js/`와 `css/`이며, 이전 `src/`나 단일 HTML을 수정할 필요가 없습니다.
+
+## 1.2 additions / 추가 모듈
+
+| Module | Responsibility |
+| --- | --- |
+| `tooling/section.js`, `tooling/components.js` | Display-only capped sections and mechanical detail |
+| `rendering/normals.js`, `rendering/lighting.js` | Sharp-edge-aware normals and contact shadows |
+| `press/processes.js` | Process profiles, charge geometry and progressive fill |
+| `app/actions/playback.js`, `ui/views/playback.js` | Pause, stage stepping and non-producing replay |
+| `workers/geometry-worker.js`, `app/actions/jobs.js` | Kernel worker, yielding file fallback, progress, cancellation and stale-source guards |
+| `project/library.js`, `app/actions/library.js`, `ui/views/library.js` | IndexedDB archive, five-revision retention, recovery and named-project UI |
+| `css/inspection.css`, `css/library.css` | Inspection, playback, job status and project-library layout |
+
+The worker entry is also an ordered page script so the file fallback and background execution use the same operation implementation. In a worker it imports only its kernel dependencies. No worker computation edits the project until the app accepts the result. The runtime fingerprint includes the worker and all dependencies.
+
+Autosave retains the existing localStorage format and additionally archives compressed snapshots in IndexedDB. Writes are serialized and active-project updates check the save generation. Library revisions are validated before restoration; restoring a revision saves the current workspace first and clears incompatible interaction/undo state. The active local save wins over older archive data after reset.

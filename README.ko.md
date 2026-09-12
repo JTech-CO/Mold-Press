@@ -31,6 +31,16 @@ python -m http.server 8000 --bind 127.0.0.1
 
 기본 샘플은 **바디 분할 → Tooling → 전체 금형 생성 → Press → 소재 선택 → 전체 프레스 → Assembly → 자동 조립** 순서로 체험할 수 있습니다. 금형 목록에서 선택한 대상은 원본이 그룹에 속해 있어도 정확히 한 바디를 가리킵니다. 일괄 생산 중 다음 금형으로 넘어갈 때 시점은 유지되며, **F**로 화면을 다시 맞춥니다.
 
+## 검사와 재생
+
+Tooling에서 X/Y/Z 단면과 절단 위치·방향, 금형 분해 간격을 조절합니다. 황색 단면은 보기 전용이며 원본과 내보내기는 유지합니다. 가이드 부시·취출판·냉각 커플러와 호스, 축별 노즐 연결을 표시하며 **부품명** 옵션으로 구성 요소를 확인합니다.
+
+뷰포트에서 성능·표준·고품질을 선택합니다. 곡면 법선과 바닥 음영을 개선했고, Three.js 고품질에서는 실시간 그림자와 PC 투과 재질을 제공합니다. 소재에 따라 수지 사출·압축 성형·금속 주조의 장비와 단계가 달라집니다. 공정은 이해를 위한 간이 표현입니다.
+
+프레스 실행 중 일시 정지·재개와 다음 단계 진행을 사용할 수 있습니다. **최근 완료 사이클 다시 보기**는 당시 형상과 소재를 재생하며 위치 이동을 지원합니다. 다시 보기에서는 완료품이 추가되지 않습니다. 재생 원본은 현재 세션에 한해 유지됩니다.
+
+HTTP(S)에서는 금형 생성·불리언·분할을 백그라운드에서 처리하며 진행률과 취소를 제공합니다. HTML을 디스크에서 직접 열면 로컬 연산으로 동작하므로 개별 연산 중 잠시 화면이 멈출 수 있습니다.
+
 ## 소재와 표면
 
 | 소재 | 화면 표현 |
@@ -58,9 +68,11 @@ python -m http.server 8000 --bind 127.0.0.1
 
 GLB 내보내기는 기본 색상·금속성·거칠기를 포함합니다. 뷰포트의 절차형 입자와 프레스 애니메이션은 파일에 베이크하지 않습니다. 20 MB 초과 파일은 가져올 수 없으며 메쉬·프로젝트 용량 제한도 적용됩니다.
 
-현재 브라우저·사이트 저장소에 자동 저장합니다. 다른 환경으로 옮길 때는 **프로젝트 JSON 백업**을 사용하세요. **공유**는 같은 브라우저·사이트 저장소의 복제 스냅샷 링크를 만듭니다. 클라우드 공유가 아니므로 다른 기기에는 JSON 파일을 전달해야 합니다.
+**프로젝트** 메뉴에서 이름을 지정하고 현재 프로젝트를 저장하거나 별도 사본을 보관할 수 있습니다. 프로젝트마다 최근 5개 저장 이력과 용량을 표시하며 이전 이력을 복원할 수 있습니다. 프로젝트 전환·복원 전에는 현재 작업을 보관합니다. 보관함에서 삭제할 때는 대상 프로젝트와 저장 이력을 확인합니다.
 
-**초기화**를 확인하면 현재 프로젝트와 실행취소·다시실행 기록을 지우고 빈 Studio로 돌아갑니다. 확인 창이 열려 있는 동안 프레스는 일시 정지하고, 취소하면 재개합니다. 현재 UI 언어와 별도 복제 스냅샷은 유지합니다. 초기화 자체는 실행취소할 수 없습니다.
+현재 브라우저·사이트의 localStorage와 IndexedDB 보관함에 자동 저장합니다. 현재 저장값이 손상되거나 localStorage 용량이 부족하면 보관함의 유효한 최근 저장을 복구합니다. 브라우저 저장소 삭제는 보관함도 지우므로 JSON 백업을 권장합니다. 다른 환경으로 옮길 때는 **프로젝트 JSON 백업**을 사용하세요. **공유**는 같은 브라우저·사이트 저장소의 복제 스냅샷 링크를 만듭니다. 클라우드 공유가 아니므로 다른 기기에는 JSON 파일을 전달해야 합니다.
+
+**초기화**를 확인하면 현재 프로젝트와 실행취소·다시실행 기록을 지우고 빈 Studio로 돌아갑니다. 확인 창이 열려 있는 동안 프레스는 일시 정지하고, 취소하면 재개합니다. 현재 UI 언어와 별도 복제 스냅샷은 유지하며, 저장소를 사용할 수 있으면 초기화 직전 프로젝트를 보관함에 남깁니다. 초기화 자체는 실행취소할 수 없습니다.
 
 ## 조작
 
@@ -79,7 +91,7 @@ GLB 내보내기는 기본 색상·금속성·거칠기를 포함합니다. 뷰�
 
 ## 개발
 
-**버전: 1.1.1.** 작은 `index.html`과 기능별 `js/`, `css/` 폴더로 실행 구조를 분리했습니다. 프로젝트 스키마와 저장 키는 버전 1을 유지해 제공된 Fix 6 프로젝트 파일과 호환됩니다.
+**버전: 1.2.0.** 작은 `index.html`과 기능별 `js/`, `css/` 폴더로 실행 구조를 분리했습니다. 프로젝트 스키마와 저장 키는 버전 1을 유지해 제공된 Fix 6 프로젝트 파일과 호환됩니다.
 
 `js/`, `css/`를 수정하고 브라우저를 새로고침하면 반영됩니다. [모듈 구조 안내](docs/ARCHITECTURE.md)에서 수정할 파일을 찾을 수 있습니다. Python 3.10 이상으로 파일 참조를 검사하거나 배포 폴더를 생성하세요.
 
@@ -94,6 +106,8 @@ python build.py --check
 python -m pip install -r tests/requirements.txt
 python -m playwright install chromium
 python tests/check_syntax.py
+python tests/enhancements.py
+python tests/library_tests.py
 python tests/kernel_contract.py
 python tests/static_site.py
 python tests/browser_workflow.py
@@ -133,9 +147,9 @@ archive/v1.1.0/             Original single-file release, retained locally
 python package.py
 ```
 
-`dist/Mold-Press-1.1.1.zip`(JS/CSS 폴더를 포함한 실행용), `dist/Mold-Press-1.1.1-source.zip`(소스·테스트 포함), SHA-256 체크섬을 생성합니다. 현재 HTML과 모든 JS/CSS에 대응하는 통과 보고서가 있어야 패키징하며, 생성된 테스트 출력과 과거 아카이브는 제외합니다.
+`dist/Mold-Press-1.2.0.zip`(JS/CSS 폴더를 포함한 실행용), `dist/Mold-Press-1.2.0-source.zip`(소스·테스트 포함), SHA-256 체크섬을 생성합니다. 현재 HTML과 모든 JS/CSS에 대응하는 통과 보고서가 있어야 패키징하며, 생성된 테스트 출력과 과거 아카이브는 제외합니다.
 
-GitHub Pages는 **Settings → Pages → Build and deployment → Source: GitHub Actions**로 설정한 뒤 **Deploy GitHub Pages** 워크플로를 수동 실행하세요. `dist/site/`의 HTML·JS/CSS·외부 라이브러리 고지를 게시합니다. 사이트 게시에는 해당 워크플로의 수동 실행이 필요합니다. 상세 절차는 [GitHub 공식 안내](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site)를 참고하세요.
+현재 저장소는 `main` 브랜치 루트가 푸시되면 [GitHub Pages](https://jtech-co.github.io/Mold-Press/)에 자동 게시됩니다. 별도의 **Deploy GitHub Pages** 워크플로는 Pages 소스를 GitHub Actions로 설정한 환경에서 `dist/site/`를 수동 게시하는 선택적 경로입니다. 상세 절차는 [GitHub 공식 안내](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site)를 참고하세요.
 
 ## 범위와 라이선스
 

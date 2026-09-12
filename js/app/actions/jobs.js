@@ -1,9 +1,8 @@
 (function (M) {
   'use strict';
-  const workerURL = new URL(
-    '../../workers/geometry-worker.js',
-    document.currentScript?.src || document.baseURI
-  ).href;
+  const workerURL = document.currentScript?.src
+    ? new URL('../../workers/geometry-worker.js', document.currentScript.src).href
+    : null;
   M.AppActions.jobs = function () {
     this.cancelJob = () => {
       const operation = this.operation;
@@ -39,7 +38,9 @@
         result = await new Promise((resolve, reject) => {
           let worker;
           try {
-            worker = new Worker(workerURL);
+            worker = new Worker(
+              workerURL || new URL('js/workers/geometry-worker.js', document.baseURI)
+            );
           } catch (e) {
             reject(e);
             return;

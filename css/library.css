@@ -1,0 +1,52 @@
+.project-library {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #3c474f;
+}
+.project-library h3 {
+  margin: 0 0 8px;
+}
+.library-save,
+.library-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.library-save input {
+  flex: 1;
+  min-width: 160px;
+  padding: 9px;
+  background: #151c22;
+  border: 1px solid #46515b;
+  color: #e2e7eb;
+  border-radius: 3px;
+}
+.library-list {
+  max-height: 270px;
+  overflow: auto;
+}
+.library-list article {
+  padding: 10px;
+  margin-top: 8px;
+  border: 1px solid #38434c;
+  border-radius: 4px;
+}
+.library-row strong,
+.library-row time {
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+.library-row .btn {
+  flex-shrink: 0;
+}
+.library-list details {
+  padding-top: 8px;
+  color: #a6b3bd;
+}
+.library-list summary {
+  cursor: pointer;
+}
+.library-list details .library-row {
+  margin-top: 6px;
+}

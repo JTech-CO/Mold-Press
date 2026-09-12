@@ -17,6 +17,13 @@ async () => {
         check(axis+' slide opens outward '+press+' '+r.id, M.V.dot(offset, bb.center)>0 && offset.every((v,i)=>Math.abs(v-r.slideDirection[i]*10)<1e-6));
       }
     }
+    const tool=M.makeTool(b), machine=M.machine(tool), pressed=M.toolRecords(b,{press:true,gap:0,datum:machine.datum}).records;
+    const plate=pressed.find(r=>r.id.endsWith('pin-plate')), plateBounds=M.bounds(M.world(plate));
+    check(axis+' ejector plate clears platen and mold throughout stroke',plateBounds.min[2]>30 && plateBounds.max[2]+8<46);
+    check(axis+' four guides and hollow bushes exist',tool.records.filter(r=>r.id.startsWith('guide-post')).length===4 && tool.records.filter(r=>r.id.startsWith('guide-bush')).length===4);
+    check(axis+' cooling circuit has four couplers and hoses',tool.records.filter(r=>r.id.startsWith('cool-coupler')).length===4 && tool.records.filter(r=>r.id.startsWith('cool-hose')).length===4);
+    const gate=pressed.find(r=>r.id.endsWith('-gate')), endpoint=machine.feedPath.at(-1), gb=M.bounds(M.world(gate));
+    check(axis+' nozzle feed joins transformed gate',endpoint.every((x,i)=>x>=gb.min[i]-.01 && x<=gb.max[i]+.01));
     check(axis+' source preserved by inspection',JSON.stringify(b)===before);
   }
   const box = M.record('section-box', M.box(20,16,12));

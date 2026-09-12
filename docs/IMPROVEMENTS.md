@@ -9,7 +9,7 @@ Eight improvements are implemented and published in priority order. Each row lin
 | 3 | Material and machined-surface detail | Complete: 64 contracts on WebGL 2, WebGL 1, Three.js and Canvas |
 | 4 | Process-specific machine and forming animation | Complete: 97 contracts, workflow/layout regressions and Three.js release checks |
 | 5 | Pause, stepping and replay without duplicate production | Complete: 99 enhancement contracts including pause, stepping, replay and reset |
-| 6 | Tool and machine component detail | Pending |
+| 6 | Tool and machine component detail | Complete: 112 contracts for clearance, connections and labels |
 | 7 | Responsive geometry jobs and overlay updates | Pending |
 | 8 | Named projects and recovery history | Pending |
 
@@ -48,3 +48,9 @@ Progressive filling uses cached capped sections of the display mesh. Unsupported
 Pause freezes the cycle clock. Next stage advances to the next process boundary and pauses; the final step produces exactly one part. Replay last completed cycle uses the original completed body and supports scrubbing. Replay changes neither project data nor tray counts. The replay source lasts for the current session and clears when switching or resetting projects.
 
 일시 정지는 사이클 시간을 멈춥니다. 다음 단계는 공정 경계까지 진행하며 마지막 단계에서 완료품을 한 번 생성합니다. 최근 완료 사이클 다시 보기는 당시 소재와 형상을 사용하며 위치 이동을 지원합니다. 다시 보기는 프로젝트와 완료품 수를 바꾸지 않으며 프로젝트 전환·초기화 시 해제됩니다.
+
+## 6. Component detail / 부품 상세
+
+External guide posts use hollow bushes and mounting ears. Ejector pins share a moving plate with an 8 mm stroke; spacer rails leave clearance above the fixed platen. Cooling circuits include couplers and supply/return hoses. Injection nozzles connect to the transformed gate for X/Y/Z tooling. Enable Labels in Tooling or Press to identify visible components. These remain illustrative equipment assemblies, not manufacturing drawings.
+
+외부 가이드 포스트에 중공 부시와 장착부를 추가했습니다. 취출판과 핀은 함께 8 mm 이동하며 하부 스페이서가 이동 공간을 확보합니다. 냉각 커플러·공급/회수 호스와 파팅 축별 노즐 연결을 표시합니다. Tooling/Press의 부품명 옵션으로 구성 요소를 확인합니다.

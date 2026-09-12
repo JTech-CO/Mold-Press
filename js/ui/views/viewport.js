@@ -48,6 +48,18 @@
           React.createElement(
             'div',
             { className: 'toolbar-group right' },
+            !isModel &&
+              React.createElement(
+                'label',
+                { className: 'render-pc' },
+                React.createElement('input', {
+                  type: 'checkbox',
+                  checked: s.componentLabels,
+                  'data-testid': 'component-labels',
+                  onChange: (e) => this.setState({ componentLabels: e.target.checked })
+                }),
+                this.t('부품명', 'Labels')
+              ),
             this.active()?.material === 'PC' &&
               React.createElement(
                 'label',
@@ -114,6 +126,15 @@
             }
           },
           this.renderSketchBoard(),
+          !isModel &&
+            s.componentLabels &&
+            React.createElement(
+              'div',
+              { className: 'component-labels', 'data-testid': 'component-label-overlay' },
+              M.componentLabels.map(([key, ko, en]) =>
+                React.createElement('span', { key, 'data-component': key }, this.t(ko, en))
+              )
+            ),
           s.page === 'assembly' && this.renderMateHint(),
           React.createElement(
             'div',

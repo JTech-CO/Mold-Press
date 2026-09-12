@@ -45,7 +45,7 @@
     for (let i = 0; i < (cfg.pins ?? 4); i++) {
       const start = corners[i].slice(),
         end = start.slice();
-      start[k] = lo[k] - 5;
+      start[k] = lo[k] - 12;
       end[k] = at - 1;
       rec.push(
         M.record('pin' + i, M.link(start, end, 1.45), '#dedfe0', { role: 'pin', metal: 0.85 })
@@ -124,6 +124,7 @@
         );
       }
     }
+    rec.push(...M.toolComponents(lo, hi, mid, k, at, cfg.pins ?? 4));
     const result = { records: rec, bb, k, axis: cfg.axis, at, analysis };
     M.toolCache.set(key, result);
     if (M.toolCache.size > 16) M.toolCache.delete(M.toolCache.keys().next().value);

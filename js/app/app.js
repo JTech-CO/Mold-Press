@@ -33,6 +33,7 @@
         engine: 'WebGL',
         quality: 'standard',
         pcTransparent: false,
+        componentLabels: false,
         busy: false,
         toast: props.error || '',
         modal: null,

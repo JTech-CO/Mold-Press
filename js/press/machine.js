@@ -11,8 +11,8 @@
       w = Math.max(106, dims[0] + 62),
       d = Math.max(90, dims[1] + 52),
       moldH = dims[2] + 24,
-      datum = 30 + moldH / 2,
-      moldTop = 30 + moldH,
+      datum = 46 + moldH / 2,
+      moldTop = 46 + moldH,
       openGap = Math.max(45, dims[2] + 12),
       crown = moldTop + openGap + 54,
       partingZ = datum + (t.at ?? t.bb.center[t.k]) - t.bb.center[t.k],
@@ -21,6 +21,14 @@
       r.push(M.record(id, M.translate(M.box(...size), pos), c, extra));
     box('machine-bed', [w + 34, d + 90, 18], [0, 12, 0], '#303a43');
     box('machine-fixed-platen', [w, d, 14], [0, 0, 23], '#626f79', { metal: 0.65 });
+    for (const sign of [-1, 1])
+      box(
+        'machine-spacer-' + sign,
+        [6, dims[1] + 24, 16],
+        [sign * (dims[0] / 2 + 8), 0, 38],
+        '#536571',
+        { metal: 0.7 }
+      );
     box('machine-crown', [w + 14, d + 14, 20], [0, 0, crown], '#55616b');
     box('machine-crown-accent', [w + 15, 3, 7], [0, -d / 2 - 8, crown], '#cc923f', { metal: 0.1 });
     for (const x of [-1, 1])
@@ -197,17 +205,30 @@
         )
       );
     }
+    const gateAxis = t.k === 1 ? 0 : 1;
+    const gate = [0, 0, partingZ];
+    gate[gateAxis] = dims[gateAxis] / 2;
+    const gateOut = gate.slice();
+    gateOut[gateAxis] += 27;
+    const feedPath = [[0, d / 2 + 48, datum], [0, d / 2 + 5, datum], gateOut, gate];
+    if (process !== 'compression') {
+      for (let i = 2; i < feedPath.length; i++)
+        records.push(
+          M.record(
+            'machine-nozzle-' + i,
+            M.link(feedPath[i - 1], feedPath[i], 3.1, 16),
+            '#a5b3bc',
+            { metal: 0.8, rough: 0.22 }
+          )
+        );
+    }
     return {
       records,
       process,
       charge,
       chargeEnd: process === 'compression' ? [0, 0, partingZ + 3] : [0, d / 2 + 68, datum + 8],
       fillAxis: t.k === 1 ? 0 : 1,
-      feedPath: [
-        [0, d / 2 + 48, datum],
-        [0, d / 2 + 8, partingZ],
-        [0, dims[1] / 2, partingZ]
-      ],
+      feedPath,
       tray,
       w,
       d,

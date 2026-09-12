@@ -50,7 +50,8 @@
             ['cavity', '캐비티', 'Cavity', '#66717b'],
             ['core', '코어', 'Core', '#a2adb4'],
             ['gate', '게이트 / 런너', 'Gate / runner', '#d8a154'],
-            ['pin', '이젝터 핀', 'Ejector pins', '#d1d7da'],
+            ['pin', '취출판 / 핀', 'Ejector plate / pins', '#d1d7da'],
+            ['guide', '가이드 포스트 / 부시', 'Guide posts / bushes', '#ae8a51'],
             ['cool', '냉각수로', 'Cooling channels', '#64a9be'],
             ['slide', '슬라이드 / 사이드코어', 'Slides / side cores', '#bb8a4b']
           ].map(([key, ko, en, c]) =>

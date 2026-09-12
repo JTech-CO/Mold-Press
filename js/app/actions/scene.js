@@ -243,6 +243,24 @@
     };
     this.onFrame = (cam) => {
       if (++this.frameN % 2) return;
+      if (this.state.componentLabels) {
+        const labels = Array.from(this.viewRef.current?.querySelectorAll('[data-component]') || [])
+          .flatMap((label) => {
+            const record = this.view.records.find(
+              (r) => r.id.includes(label.dataset.component) && r.alpha !== 0 && !r.sectionCap
+            );
+            label.style.display = record ? '' : 'none';
+            return record ? [{ label, xy: cam.project(M.bounds(M.world(record)).center) }] : [];
+          })
+          .sort((a, b) => a.xy.y - b.xy.y);
+        let previousY = -100;
+        for (const { label, xy } of labels) {
+          const y = Math.max(110, Math.min(this.view.h - 80, xy.y), previousY + 26);
+          label.style.left = Math.max(8, Math.min(this.view.w - 160, xy.x)) + 'px';
+          label.style.top = y + 'px';
+          previousY = y;
+        }
+      }
       const b = this.active();
       if (b) {
         const bb = M.bounds(M.world(b)),

@@ -459,11 +459,15 @@
                 React.createElement(
                   'span',
                   null,
-                  s.running
-                    ? this.t('진행 중', 'RUNNING')
-                    : s.progress === 1
-                      ? this.t('사이클 완료', 'COMPLETE')
-                      : this.t('사이클 대기', 'READY')
+                  s.pressReplay
+                    ? this.t('다시 보기', 'REPLAY')
+                    : s.pressPaused
+                      ? this.t('일시 정지', 'PAUSED')
+                      : s.running
+                        ? this.t('진행 중', 'RUNNING')
+                        : s.progress === 1
+                          ? this.t('사이클 완료', 'COMPLETE')
+                          : this.t('사이클 대기', 'READY')
                 ),
                 React.createElement(
                   'strong',
@@ -546,7 +550,9 @@
                     ? React.createElement(
                         Button,
                         { icon: 'stop', onClick: this.stopPress, test: 'cancel-press' },
-                        this.t('사이클 취소', 'Cancel cycle')
+                        s.pressReplay
+                          ? this.t('다시 보기 닫기', 'Close replay')
+                          : this.t('사이클 취소', 'Cancel cycle')
                       )
                     : React.createElement(
                         React.Fragment,

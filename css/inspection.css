@@ -45,3 +45,26 @@
   color: #9aa7b2;
   line-height: 1.5;
 }
+
+.playback-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.playback-panel small {
+  display: block;
+  color: #9aa7b2;
+  line-height: 1.5;
+  margin-top: 6px;
+}
+.replay-seek {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 12px;
+}
+.replay-seek input {
+  width: 100%;
+  accent-color: #dda65a;
+}

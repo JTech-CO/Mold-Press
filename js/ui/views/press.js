@@ -140,6 +140,7 @@
             this.t('금형 반투명 보기', 'Translucent mold')
           )
         ),
+        this.renderPlaybackControls(),
         React.createElement(
           'section',
           { className: 'materials-section' },

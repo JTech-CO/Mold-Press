@@ -21,6 +21,7 @@
       for (const timer of ['saveTimer', 'pressTransition', 'collisionTimer', 'toastTimer'])
         clearTimeout(this[timer]);
       this.cycle = null;
+      this.lastPress = null;
       this.pressQueue = [];
       this.cancelGizmo?.();
       this.directDrag = null;

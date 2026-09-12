@@ -92,7 +92,7 @@
     this.advancePress = (now) => {
       const c = this.cycle;
       if (!c || !this.state.running || c.completing) return;
-      if (this.state.modal === 'reset') {
+      if (this.state.modal === 'reset' || this.state.pressPaused) {
         c.lastTime = now;
         return;
       }
@@ -112,6 +112,13 @@
     this.afterPressFrame = () => {
       const c = this.cycle;
       if (!c || !c.presentFinal || c.completing) return;
+      if (c.replay) {
+        c.presentFinal = false;
+        c.manualFinal = false;
+        this.setState({ pressPaused: true, progress: 1, phase: 4 });
+        return;
+      }
+      if (this.state.pressPaused && !c.manualFinal) return;
       // The ejection endpoint is drawn before the part is committed to the tray.
       c.completing = true;
       this.pressTransition = setTimeout(() => this.finishCycle(c), 100);
@@ -150,6 +157,8 @@
           queueIndex: 0,
           queueTotal: list.length,
           running: true,
+          pressPaused: false,
+          pressReplay: false,
           progress: 0,
           phase: 0
         },
@@ -167,6 +176,7 @@
         const target = this.pressTarget();
         this.setState({
           running: false,
+          pressPaused: false,
           progress: 1,
           phase: 4,
           selected: target ? [target.id] : []
@@ -199,7 +209,8 @@
     this.finishCycle = (c) => {
       if (!this.alive || c !== this.cycle || c.epoch !== this.pressEpoch || !this.state.running)
         return;
-      if (this.state.modal === 'reset') {
+      if (c.replay) return;
+      if (this.state.modal === 'reset' || (this.state.pressPaused && !c.manualFinal)) {
         this.pressTransition = setTimeout(() => this.finishCycle(c), 100);
         return;
       }
@@ -222,6 +233,7 @@
           created: new Date().toISOString(),
           cycle: mat.cycle
         };
+      this.lastPress = JSON.parse(JSON.stringify(b));
       this.edit(this.t('취출 완료', 'Ejection complete'), (p) => {
         p.tray.push(tr);
       });
@@ -232,15 +244,24 @@
       }, 150);
     };
     this.stopPress = () => {
+      const replay = this.state.pressReplay;
       clearTimeout(this.pressTransition);
       this.pressEpoch = (this.pressEpoch || 0) + 1;
       this.cycle = null;
       this.pressQueue = [];
-      this.setState({ running: false, progress: 0, phase: 0 });
+      this.setState({
+        running: false,
+        pressPaused: false,
+        pressReplay: false,
+        progress: 0,
+        phase: 0
+      });
       this.notice(
         this.t(
-          '진행 중인 사이클을 취소했습니다. 완료품은 유지됩니다.',
-          'Current cycle cancelled. Completed parts are kept.'
+          replay
+            ? '다시 보기를 종료했습니다.'
+            : '진행 중인 사이클을 취소했습니다. 완료품은 유지됩니다.',
+          replay ? 'Replay closed.' : 'Current cycle cancelled. Completed parts are kept.'
         )
       );
     };

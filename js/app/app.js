@@ -14,6 +14,7 @@
       M.AppActions.modeling.call(this, props);
       M.AppActions.tooling.call(this, props);
       M.AppActions.press.call(this, props);
+      M.AppActions.playback.call(this, props);
       M.AppActions.assembly.call(this, props);
       M.AppActions.files.call(this, props);
       M.AppActions.share.call(this, props);
@@ -38,6 +39,8 @@
         exportScope: 'all',
         speed: 4,
         running: false,
+        pressPaused: false,
+        pressReplay: false,
         progress: 0,
         phase: 0,
         queueIndex: 0,
@@ -133,6 +136,10 @@
     }
     componentDidUpdate(prevProps, prev) {
       this.reconcileCad?.();
+      if (prev.p.id !== this.state.p.id) {
+        this.lastPress = null;
+        if (this.state.running) this.stopPress();
+      }
       if (prev.lang !== this.state.lang) document.documentElement.lang = this.state.lang;
       if (this.state.page === 'press' && !this.state.running) {
         const target = this.pressTarget();

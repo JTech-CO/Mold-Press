@@ -59,6 +59,43 @@ async def run(url):
             await page.wait_for_timeout(100)
             assert await page.evaluate('MoldPress.app.view.records.every(r=>!r.transmission)')
             report['checks'].append({'name':'PC transparency enables and restores without geometry edits or shader failures','status':'PASS'})
+            await page.get_by_test_id('render-quality').select_option('standard')
+            await page.get_by_test_id('tab-press').click()
+            baseline = await page.evaluate('JSON.stringify(MoldPress.app.state.p)')
+            await page.get_by_test_id('replay-press').click()
+            await page.get_by_test_id('replay-seek').fill('75')
+            assert await page.evaluate('MoldPress.app.state.progress') == .75
+            await page.get_by_test_id('replay-seek').fill('0')
+            await page.get_by_test_id('pause-press').click()
+            await page.wait_for_timeout(250)
+            await page.get_by_test_id('pause-press').click()
+            paused = await page.evaluate('MoldPress.app.cycle.progress')
+            await page.wait_for_timeout(250)
+            assert await page.evaluate('MoldPress.app.cycle.progress') == paused
+            await page.get_by_test_id('step-press').click()
+            assert await page.evaluate('MoldPress.app.cycle.progress') == .34
+            await page.screenshot(path=str(OUTPUT/'evidence/playback-paused.png'))
+            await page.get_by_test_id('replay-seek').fill('100')
+            await page.get_by_test_id('pause-press').click()
+            await page.wait_for_function('MoldPress.app.state.pressPaused && MoldPress.app.cycle.progress===1', timeout=15000)
+            assert await page.evaluate('JSON.stringify(MoldPress.app.state.p)') == baseline
+            await page.get_by_test_id('cancel-press').click()
+            count = await page.evaluate('MoldPress.app.state.p.tray.length')
+            await page.get_by_test_id('press-one').click()
+            await page.get_by_test_id('pause-press').click()
+            for _ in range(5):
+                await page.get_by_test_id('step-press').click()
+                await page.wait_for_timeout(60)
+            await page.wait_for_function('!MoldPress.app.state.running')
+            await page.wait_for_timeout(300)
+            assert await page.evaluate('MoldPress.app.state.p.tray.length') == count+1
+            report['checks'].append({'name':'Pause freezes time; stage stepping completes once; full replay preserves project and tray','status':'PASS'})
+            await page.get_by_test_id('replay-press').click()
+            await page.get_by_test_id('reset-project').click()
+            await page.get_by_test_id('reset-confirm').click()
+            await page.wait_for_timeout(350)
+            assert await page.evaluate('!MoldPress.app.cycle && !MoldPress.app.lastPress && !MoldPress.app.state.running && !MoldPress.app.state.pressReplay && MoldPress.app.state.p.tray.length===0')
+            report['checks'].append({'name':'Reset clears replay and pending production','status':'PASS'})
             assert not errors, errors
             report['checks'].append({'name': 'Section controls work without page errors in the live UI', 'status': 'PASS'})
             await page.screenshot(path=str(OUTPUT/'evidence/enhancements.png'))

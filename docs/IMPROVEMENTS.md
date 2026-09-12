@@ -8,7 +8,7 @@ Eight improvements are implemented and published in priority order. Each row lin
 | 2 | Smooth curved surfaces and contact lighting | Complete: 41 contracts on local WebGL, Three.js and Canvas; kernel unchanged |
 | 3 | Material and machined-surface detail | Complete: 64 contracts on WebGL 2, WebGL 1, Three.js and Canvas |
 | 4 | Process-specific machine and forming animation | Complete: 97 contracts, workflow/layout regressions and Three.js release checks |
-| 5 | Pause, stepping and replay without duplicate production | Pending |
+| 5 | Pause, stepping and replay without duplicate production | Complete: 99 enhancement contracts including pause, stepping, replay and reset |
 | 6 | Tool and machine component detail | Pending |
 | 7 | Responsive geometry jobs and overlay updates | Pending |
 | 8 | Named projects and recovery history | Pending |
@@ -42,3 +42,9 @@ Resins use a hollow hopper, pellet charge, injection ram and progressive cavity 
 Progressive filling uses cached capped sections of the display mesh. Unsupported open meshes fade into view. The original mesh and final shrink calculation are unchanged. These are explanatory animations, not flow, thermal or load solvers.
 
 수지는 호퍼·펠릿·사출 램과 점진 충전, Aluminum 6061은 판재 투입과 압축, Zinc는 용탕 저장부·주입·응고를 표시합니다. 소재를 선택하면 설비와 단계 이름이 바뀝니다. 최종 제품 생성과 수축 계산은 유지하며 실제 유동·열·하중 해석은 수행하지 않습니다.
+
+## 5. Playback / 재생 제어
+
+Pause freezes the cycle clock. Next stage advances to the next process boundary and pauses; the final step produces exactly one part. Replay last completed cycle uses the original completed body and supports scrubbing. Replay changes neither project data nor tray counts. The replay source lasts for the current session and clears when switching or resetting projects.
+
+일시 정지는 사이클 시간을 멈춥니다. 다음 단계는 공정 경계까지 진행하며 마지막 단계에서 완료품을 한 번 생성합니다. 최근 완료 사이클 다시 보기는 당시 소재와 형상을 사용하며 위치 이동을 지원합니다. 다시 보기는 프로젝트와 완료품 수를 바꾸지 않으며 프로젝트 전환·초기화 시 해제됩니다.

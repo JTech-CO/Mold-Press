@@ -2,6 +2,8 @@
 
 ## Workspace improvements - 2026-09-12
 
+- Add pause/resume, process stepping and scrubbed replay without duplicate production.
+
 - Connect material process metadata to injection, compression and casting equipment and forming paths.
 - Add filtered directional finishes, polished mold interiors, GPU micro-bumps and optional clear PC.
 - Add crease-preserving render normals, contact shading and Fast/Standard/High quality controls across renderers.

@@ -36,6 +36,7 @@
           )
         ),
         this.renderTree(),
+        this.renderInspection(),
         React.createElement(
           'section',
           null,

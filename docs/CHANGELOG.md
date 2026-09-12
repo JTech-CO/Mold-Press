@@ -1,5 +1,11 @@
 # Changelog
 
+## Workspace improvements - 2026-09-12
+
+- Add display-only capped sections and mold opening-gap controls.
+- Correct side-core movement for every parting axis and press coordinate conversion.
+- Track the eight implementation stages in [IMPROVEMENTS.md](IMPROVEMENTS.md).
+
 ## 1.1.1 - 2026-09-08
 
 - Replace the bundled HTML entrypoint with external deferred scripts and stylesheet links.

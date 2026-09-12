@@ -25,7 +25,7 @@
         r.pos = item.base.slice();
         if (/upper/.test(r.role)) r.pos[2] += gap;
         if (r.role === 'pin') r.pos[2] += m.pin * 8;
-        if (r.role === 'slide') r.pos[0] += (r.id.endsWith('slide-1') ? -1 : 1) * gap * 0.5;
+        if (r.role === 'slide') r.pos = V.add(r.pos, V.mul(r.slideDirection, gap * 0.5));
         r.alpha = cutaway
           ? r.id.endsWith('-cavity')
             ? 0.23

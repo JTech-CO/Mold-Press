@@ -1,6 +1,8 @@
 # Verification / 검증 결과
 
-Version **1.1.1** · 2026-09-08
+Baseline version **1.1.1** · 2026-09-08
+
+This record covers the original release. Subsequent feature work and its checks are tracked in [IMPROVEMENTS.md](IMPROVEMENTS.md) and GitHub CI.
 
 ## Runtime structure / 실행 구조
 

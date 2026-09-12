@@ -1,0 +1,24 @@
+.inspection-panel {
+  border-top: 1px solid var(--line, #30363d);
+}
+.inspection-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 10px 0;
+  font-size: 12px;
+}
+.inspection-field input[type='range'] {
+  width: 105px;
+  min-width: 0;
+  accent-color: #dda65a;
+}
+.inspection-field select {
+  max-width: 130px;
+}
+.inspection-panel small {
+  display: block;
+  line-height: 1.5;
+  color: #9aa7b2;
+}

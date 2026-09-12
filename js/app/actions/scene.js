@@ -104,7 +104,7 @@
         } else if (s.page === 'tooling') {
           if (b) {
             if (b.tool) {
-              const t = M.toolRecords(b, { gap: 18, xray: s.xray, hidden: s.hidden });
+              const t = M.toolRecords(b, { gap: s.toolGap, xray: s.xray, hidden: s.hidden });
               recs.push(...t.records);
               if (!s.hideProduct) recs.push(this.productRecord(b));
               pick.push(b);
@@ -188,7 +188,17 @@
           this.applyPressMotion(this.cycle?.progress ?? s.progress, s.running);
         }
 
-        this.view.set(recs, pick);
+        if (s.page === 'tooling' && s.sectionEnabled) {
+          const section = M.sectionRecords(
+            recs,
+            s.sectionAxis,
+            s.sectionPosition,
+            s.sectionReverse
+          );
+          this.view.set(section.records, []);
+          if (s.sectionError !== Boolean(section.errors.length))
+            this.setState({ sectionError: Boolean(section.errors.length) });
+        } else this.view.set(recs, pick);
         // Preserve the user's orbit, pan and zoom when the next mold is mounted.
       } catch (e) {
         console.error('Scene assembly:', e);

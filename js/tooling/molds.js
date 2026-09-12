@@ -117,7 +117,10 @@
         s[k] = Math.max(8, size[k] * 0.3);
         s[d] = Math.max(10, size[d] * 0.25);
         rec.push(
-          M.record('slide' + sign, M.translate(M.box(...s), q), '#bd8945', { role: 'slide' })
+          M.record('slide' + sign, M.translate(M.box(...s), q), '#bd8945', {
+            role: 'slide',
+            slideDirection: [0, 0, 0].map((_, i) => (i === a ? sign : 0))
+          })
         );
       }
     }
@@ -142,7 +145,10 @@
     if (press && !t.pressRecords) {
       t.pressRecords = t.records.map((r) => ({
         ...r,
-        geo: M.pack(transformAxis(M.unpack(r.geo), t.bb, t.k))
+        geo: M.pack(transformAxis(M.unpack(r.geo), t.bb, t.k)),
+        slideDirection: r.slideDirection
+          ? transformAxis(r.slideDirection, { center: [0, 0, 0] }, t.k)
+          : undefined
       }));
       t.pressProductGeo = M.pack(transformAxis(M.world(b), t.bb, t.k));
     }
@@ -156,7 +162,7 @@
       if (/upper/.test(r.role)) pos[k] += gap;
       if (!press && /lower|pin/.test(r.role)) pos[k] -= gap;
       if (r.role === 'pin') pos[k] += options.eject || 0;
-      if (r.role === 'slide') pos[(k + 1) % 3] += (r.id.includes('-') ? -1 : 1) * gap * 0.5;
+      if (r.role === 'slide') for (let j = 0; j < 3; j++) pos[j] += r.slideDirection[j] * gap * 0.5;
       if (press) pos[2] += options.datum ?? 82;
       const alpha = options.xray
         ? r.id === 'cavity'

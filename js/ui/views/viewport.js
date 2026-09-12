@@ -53,6 +53,18 @@
           React.createElement(
             'div',
             { className: 'toolbar-group right' },
+            this.active()?.material === 'PC' &&
+              React.createElement(
+                'label',
+                { className: 'render-pc' },
+                React.createElement('input', {
+                  type: 'checkbox',
+                  checked: s.pcTransparent,
+                  'data-testid': 'pc-transparent',
+                  onChange: (e) => this.setState({ pcTransparent: e.target.checked })
+                }),
+                this.t('PC 투명', 'Clear PC')
+              ),
             React.createElement(
               'select',
               {

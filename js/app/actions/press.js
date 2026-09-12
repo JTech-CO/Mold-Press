@@ -39,7 +39,10 @@
           shrink = 1 - mat.shrink * m.cool;
         rig.blank.pos = V.lerp(machine.feed, [0, 0, machine.partingZ + 3], m.feed);
         rig.blank.scale = [1 - 0.08 * q, 1 - 0.08 * q, 1 - 0.65 * q];
-        rig.blank.alpha = s.hideProduct ? 0 : 1 - q;
+        rig.blank.alpha = s.hideProduct
+          ? 0
+          : (1 - q) * (mat.name === 'PC' && s.pcTransparent ? 0.42 : 1);
+        rig.blank.transmission = mat.name === 'PC' && s.pcTransparent ? 0.75 : 0;
         if (rig.part) {
           const startScale = thickness / Math.max(0.01, machine.dims[2]);
           rig.part.scale = [shrink, shrink, (startScale + (1 - startScale) * q) * shrink];
@@ -48,7 +51,9 @@
             rig.part.pos = V.lerp([0, 0, machine.datum + 8], machine.tray, m.eject);
             rig.part.pos[2] += Math.sin(m.eject * Math.PI) * 24;
           }
-          rig.part.alpha = s.hideProduct ? 0 : Math.min(1, q * 4);
+          rig.part.alpha = s.hideProduct
+            ? 0
+            : Math.min(1, q * 4) * (mat.name === 'PC' && s.pcTransparent ? 0.42 : 1);
           rig.part.color = V.lerp(M.hex(mat.color), [0.95, 0.59, 0.27], (1 - m.cool) * 0.1);
         }
       }

@@ -36,5 +36,9 @@ async () => {
   check('Cylinder caps retain sharp boundaries',Array.from({length:ns.length/3},(_,i)=>i*3).filter(i=>Math.abs(flat[i+2])>0.99).every(i=>Math.abs(ns[i+2])>0.99));
   check('Fast quality disables contact shading',M.contactShadows([box],'low').length===0);
   check('Standard quality supplies contact shading',M.contactShadows([box],'standard').length===4);
+  for (const [key,surface] of Object.entries(M.finishes)) {
+    check('Finite material profile '+key,Array.from({length:20},(_,i)=>M.surfaceValue(i*.17,i*.23,i*.37,surface)).every(x=>Number.isFinite(x)&&Math.abs(x)<=1.01));
+    check('Subpixel detail fades '+key,Math.abs(M.surfaceValue(1,2,3,surface,[0,0,1],3))<1e-6);
+  }
   return results;
 }

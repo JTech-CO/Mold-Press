@@ -28,3 +28,11 @@
   font-size: 11px;
   padding: 4px;
 }
+
+.render-pc {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+}

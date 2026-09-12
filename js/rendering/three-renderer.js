@@ -65,8 +65,14 @@
       this.camera.updateProjectionMatrix();
       for (const r of records) {
         used.add(r.id);
+        const physical = !r.lines && r.transmission > 0 && this.quality === 'high';
         let obj = this.cache.get(r.id);
-        if (!obj || obj.userData.geo !== r.geo || obj.userData.lines !== r.lines) {
+        if (
+          !obj ||
+          obj.userData.geo !== r.geo ||
+          obj.userData.lines !== r.lines ||
+          obj.userData.physical !== physical
+        ) {
           if (obj) {
             this.scene.remove(obj);
             obj.geometry.dispose();
@@ -87,7 +93,7 @@
                 transparent: true,
                 opacity: r.alpha ?? 1
               })
-            : new T.MeshStandardMaterial({
+            : new (physical ? T.MeshPhysicalMaterial : T.MeshStandardMaterial)({
                 color: new T.Color(...M.hex(r.color)).convertSRGBToLinear(),
                 roughness: r.rough ?? 0.4,
                 metalness: r.metal ?? 0.3,
@@ -99,28 +105,48 @@
                 polygonOffsetUnits: 1
               });
           if (!r.lines) {
+            mat.extensions = { ...mat.extensions, derivatives: true };
+            if (physical) {
+              mat.transmission = r.transmission;
+              mat.thickness = 2;
+              mat.ior = 1.58;
+              mat.attenuationDistance = 100;
+            }
+            mat.userData.detail = { value: this.quality === 'low' ? 0 : 1 };
             mat.userData.surface = {
               value: new T.Vector4().fromArray(r.surface || M.finishes.none)
             };
             mat.onBeforeCompile = (shader) => {
               shader.uniforms.uSurface = mat.userData.surface;
+              shader.uniforms.uSurfaceMin = { value: g.boundingBox.min };
+              shader.uniforms.uSurfaceMax = { value: g.boundingBox.max };
+              shader.uniforms.uDetail = mat.userData.detail;
               shader.vertexShader =
-                'varying vec3 vSurfacePosition;\n' +
+                'varying vec3 vSurfacePosition; varying vec3 vSurfaceNormal;\n' +
                 shader.vertexShader.replace(
                   '#include <begin_vertex>',
-                  '#include <begin_vertex>\nvSurfacePosition=position;'
+                  '#include <begin_vertex>\nvSurfacePosition=position;vSurfaceNormal=normal;'
                 );
               shader.fragmentShader =
+                '#define MP_DERIVATIVES\n' +
                 M.surfaceGLSL +
                 shader.fragmentShader.replace(
                   '#include <roughnessmap_fragment>',
-                  '#include <roughnessmap_fragment>\nfloat mpFinish=mpSurface(vSurfacePosition);diffuseColor.rgb*=1.0+mpFinish*uSurface.y;roughnessFactor=clamp(roughnessFactor+mpFinish*uSurface.w,.045,1.0);'
+                  '#include <roughnessmap_fragment>\nfloat mpFinish=mpSurface(vSurfacePosition);diffuseColor.rgb*=1.0+mpFinish*uSurface.y;roughnessFactor=clamp(roughnessFactor*mix(.5,1.,mpMachined(vSurfacePosition))+mpFinish*uSurface.w,.045,1.0);'
                 );
             };
-            mat.customProgramCacheKey = () => 'mold-press-finish-v1';
+            const compile = mat.onBeforeCompile;
+            mat.onBeforeCompile = (shader) => {
+              compile(shader);
+              shader.fragmentShader = shader.fragmentShader.replace(
+                '#include <normal_fragment_maps>',
+                '#include <normal_fragment_maps>\nnormal=mpBump(normal,-vViewPosition,mpSurface(vSurfacePosition)*uSurface.w*.08/max(1.,uSurface.z));'
+              );
+            };
+            mat.customProgramCacheKey = () => 'mold-press-finish-v2';
           }
           obj = r.lines ? new T.LineSegments(g, mat) : new T.Mesh(g, mat);
-          obj.userData = { geo: r.geo, lines: r.lines };
+          obj.userData = { geo: r.geo, lines: r.lines, physical };
           this.cache.set(r.id, obj);
           this.scene.add(obj);
         }
@@ -131,12 +157,13 @@
         obj.material.color.setRGB(...M.hex(r.color)).convertSRGBToLinear();
         if (!r.lines) {
           obj.material.roughness = r.rough ?? 0.4;
+          obj.material.userData.detail.value = this.quality === 'low' ? 0 : 1;
           obj.material.metalness = r.metal ?? 0.3;
           obj.material.userData.surface.value.fromArray(r.surface || M.finishes.none);
         }
         obj.castShadow = !r.lines && !r.helper && (r.alpha ?? 1) >= 0.99;
         obj.receiveShadow = !r.lines && !r.helper;
-        obj.material.opacity = r.alpha ?? 1;
+        obj.material.opacity = physical ? Math.min(1, (r.alpha ?? 1) / 0.42) : (r.alpha ?? 1);
         const transparent = obj.material.opacity < 0.99;
         if (obj.material.transparent !== transparent) {
           obj.material.transparent = transparent;

@@ -99,6 +99,8 @@
               return col.map((x) => Math.min(255, (x * light + spec) * 255));
             }),
             surface: r.surface,
+            localNormal: Array.from(renderNormals.slice(i, i + 3)),
+            surfaceBounds: M.surfaceBounds(M.unpack(r.geo)),
             local: local ? local.slice(i, i + 9) : null,
             col: col.map((x) => Math.min(255, (x * light + spec) * 255)),
             alpha: r.alpha ?? 1,
@@ -131,13 +133,15 @@
             let finish = 1;
             if (t.local) {
               const p = t.local;
+              const point = [
+                u * p[0] + v * p[3] + k * p[6],
+                u * p[1] + v * p[4] + k * p[7],
+                u * p[2] + v * p[5] + k * p[8]
+              ];
               finish +=
-                M.surfaceValue(
-                  u * p[0] + v * p[3] + k * p[6],
-                  u * p[1] + v * p[4] + k * p[7],
-                  u * p[2] + v * p[5] + k * p[8],
-                  t.surface
-                ) * t.surface[1];
+                M.surfaceValue(...point, t.surface, t.localNormal, cam.viewW / w) *
+                t.surface[1] *
+                M.machinedFactor(point, t.surface, t.surfaceBounds);
             }
             for (let ch = 0; ch < 3; ch++)
               pix[off + ch] =

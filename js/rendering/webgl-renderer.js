@@ -20,9 +20,30 @@
       }
       this.name = 'WebGL · local';
       const gl = this.gl;
-      const vs = `attribute vec3 aPosition; attribute vec3 aNormal; uniform mat4 uVP; uniform mat4 uModel; uniform mat3 uNormal; varying vec3 vN; varying vec3 vP; varying vec3 vSurfacePosition; void main(){vSurfacePosition=aPosition;vec4 p=uModel*vec4(aPosition,1.);vP=p.xyz;vN=normalize(uNormal*aNormal);gl_Position=uVP*p;}`;
-      const fs = `precision highp float;${M.surfaceGLSL}varying vec3 vN;varying vec3 vP;uniform vec3 uColor;uniform vec3 uEye;uniform float uAlpha;uniform float uRough;uniform float uMetal;uniform float uLine;void main(){float finish=mpSurface(vSurfacePosition);float rough=clamp(uRough+finish*uSurface.w,.045,1.);vec3 n=normalize(vN);if(!gl_FrontFacing)n=-n;vec3 l=normalize(vec3(-.4,-.8,1.2));vec3 l2=normalize(vec3(.8,.2,.6));float diff=max(dot(n,l),0.);float fill=max(dot(n,l2),0.);vec3 view=normalize(uEye-vP);float spec=pow(max(dot(n,normalize(l+view)),0.),mix(110.,8.,rough))*(.24+.6*uMetal);float rim=pow(1.-max(dot(n,view),0.),3.)*.12;vec3 color=uColor*(1.+finish*uSurface.y)*(.36+.51*diff+.25*fill)+vec3(spec+rim);if(uLine>.5)color=uColor;gl_FragColor=vec4(color,uAlpha);}`;
+      const vs = `attribute vec3 aPosition; attribute vec3 aNormal; uniform mat4 uVP; uniform mat4 uModel; uniform mat3 uNormal; varying vec3 vN; varying vec3 vP; varying vec3 vSurfacePosition; varying vec3 vSurfaceNormal; void main(){vSurfaceNormal=aNormal;vSurfacePosition=aPosition;vec4 p=uModel*vec4(aPosition,1.);vP=p.xyz;vN=normalize(uNormal*aNormal);gl_Position=uVP*p;}`;
+      const isWebGL2 = canvas.getContext('webgl2') === gl;
+      const derivatives = isWebGL2 || gl.getExtension('OES_standard_derivatives');
+      const extension = derivatives
+        ? (canvas.getContext('webgl2') === gl
+            ? ''
+            : '#extension GL_OES_standard_derivatives : enable\n') + '#define MP_DERIVATIVES\n'
+        : '';
+      const fs = `${extension}precision highp float;${M.surfaceGLSL}varying vec3 vN;varying vec3 vP;uniform vec3 uColor;uniform vec3 uEye;uniform float uAlpha;uniform float uRough;uniform float uMetal;uniform float uLine;void main(){float finish=mpSurface(vSurfacePosition);float rough=clamp(uRough*mix(.5,1.,mpMachined(vSurfacePosition))+finish*uSurface.w,.045,1.);vec3 n=normalize(vN);if(!gl_FrontFacing)n=-n;n=mpBump(n,vP,finish*uSurface.w*.08/max(1.,uSurface.z));vec3 l=normalize(vec3(-.4,-.8,1.2));vec3 l2=normalize(vec3(.8,.2,.6));float diff=max(dot(n,l),0.);float fill=max(dot(n,l2),0.);vec3 view=normalize(uEye-vP);float spec=pow(max(dot(n,normalize(l+view)),0.),mix(110.,8.,rough))*(.24+.6*uMetal);float rim=pow(1.-max(dot(n,view),0.),3.)*.12;vec3 color=uColor*(1.+finish*uSurface.y)*(.36+.51*diff+.25*fill)+vec3(spec+rim);if(uLine>.5)color=uColor;gl_FragColor=vec4(color,uAlpha);}`;
       const compile = (type, src) => {
+        if (isWebGL2) {
+          src =
+            '#version 300 es\n' +
+            src
+              .replace(/\battribute\b/g, 'in')
+              .replace(/\bvarying\b/g, type === gl.VERTEX_SHADER ? 'out' : 'in');
+          if (type === gl.FRAGMENT_SHADER)
+            src = src
+              .replace(
+                'precision highp float;',
+                'precision highp float;\nout vec4 mpFragmentColor;'
+              )
+              .replace(/gl_FragColor/g, 'mpFragmentColor');
+        }
         const s = gl.createShader(type);
         gl.shaderSource(s, src);
         gl.compileShader(s);
@@ -46,7 +67,10 @@
         'Rough',
         'Metal',
         'Line',
-        'Surface'
+        'Surface',
+        'SurfaceMin',
+        'SurfaceMax',
+        'Detail'
       ])
         this.u[n] = gl.getUniformLocation(this.program, 'u' + n);
       this.aP = gl.getAttribLocation(this.program, 'aPosition');
@@ -129,6 +153,10 @@
         gl.uniform1f(this.u.Metal, r.metal ?? 0);
         gl.uniform1f(this.u.Line, r.lines ? 1 : 0);
         gl.uniform4fv(this.u.Surface, r.surface || M.finishes.none);
+        const sb = M.surfaceBounds(M.unpack(r.geo));
+        gl.uniform3fv(this.u.SurfaceMin, sb.min);
+        gl.uniform3fv(this.u.SurfaceMax, sb.max);
+        gl.uniform1f(this.u.Detail, this.quality === 'low' ? 0 : 1);
         gl.depthMask((r.alpha ?? 1) >= 0.99);
         if (r.lines) {
           gl.depthFunc(gl.LEQUAL);

@@ -28,7 +28,9 @@
           ...b,
           rough: mat.rough,
           metal: mat.metal,
-          surface: mat.surface
+          surface: mat.surface,
+          alpha: b.material === 'PC' && this.state.pcTransparent ? 0.42 : 1,
+          transmission: b.material === 'PC' && this.state.pcTransparent ? 0.75 : 0
         }),
         ...extra
       };
@@ -166,7 +168,9 @@
                 pos: machine.feed.slice(),
                 rough: mat.rough,
                 metal: mat.metal,
-                surface: mat.surface
+                surface: mat.surface,
+                alpha: b.material === 'PC' && this.state.pcTransparent ? 0.42 : 1,
+                transmission: b.material === 'PC' && this.state.pcTransparent ? 0.75 : 0
               }
             );
             recs.push(rig.blank);

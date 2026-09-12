@@ -37,7 +37,7 @@ To try the supplied sample: **split the body → Tooling → generate all molds 
 | --- | --- |
 | ABS | Fine satin grain |
 | PP | Subtle, waxy semi-gloss |
-| PC | Smooth gloss; an opaque visual approximation |
+| PC | Smooth gloss; optional clear view, with transmission in Three.js High quality |
 | Nylon | Matte fine grain |
 | Aluminum 6061 | Directional brushed metal |
 | Zinc | Fine metallic variation |

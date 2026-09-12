@@ -6,7 +6,7 @@ Eight improvements are implemented and published in priority order. Each row lin
 | --- | --- | --- |
 | 1 | Display-only capped X/Y/Z sections, opening gap, side-core direction correction | Complete: 35 enhancement checks, kernel and built-site checks passed |
 | 2 | Smooth curved surfaces and contact lighting | Complete: 41 contracts on local WebGL, Three.js and Canvas; kernel unchanged |
-| 3 | Material and machined-surface detail | Pending |
+| 3 | Material and machined-surface detail | Complete: 64 contracts on WebGL 2, WebGL 1, Three.js and Canvas |
 | 4 | Process-specific machine and forming animation | Pending |
 | 5 | Pause, stepping and replay without duplicate production | Pending |
 | 6 | Tool and machine component detail | Pending |
@@ -26,3 +26,11 @@ Verification: all three parting axes, outward slide travel in both coordinate sy
 The viewport quality selector offers Fast, Standard and High. Render-only, angle-weighted normals smooth curves while keeping boundaries above 35 degrees sharp. Standard adds lightweight ground contact shading; High adds dynamic soft shadows in Three.js. Canvas interpolates vertex lighting and adjusts its raster resolution. Fast removes contact shading and lowers the pixel budget. CAD meshes and exported geometry are unchanged.
 
 뷰포트 품질 선택에서 성능·표준·고품질을 선택합니다. 곡면을 매끄럽게 표현하면서 35도 이상의 모서리는 유지합니다. 표준은 가벼운 바닥 음영을, Three.js 고품질은 실시간 부품 그림자를 제공합니다. 원본 메쉬와 내보내기는 유지합니다.
+
+## 3. Surface finishes / 소재와 가공면
+
+Machined mold exteriors use fine directional grain; interior surfaces reduce the grain and polish the GPU roughness response. Continuous procedural patterns fade below pixel size to reduce distant striping, with derivative-based micro-bumps on supported GPU paths. Canvas uses filtered color detail. All patterns remain attached to object coordinates.
+
+Select a PC body and enable **Clear PC** in the viewport toolbar. Three.js High uses a transmission material; the other paths use lightweight alpha transparency. This is a viewport preference and does not change saved geometry or export materials.
+
+금형 외곽의 가공면과 내부 연마면을 구분하고, 확대율에 따라 미세 무늬를 완화합니다. PC를 선택하면 뷰포트의 **PC 투명** 옵션을 사용할 수 있습니다. 투명 보기는 화면 설정이며 원본 형상과 내보내기 소재는 유지합니다.

@@ -17,6 +17,8 @@ async def run(url):
     async with async_playwright() as pw:
         browser = await pw.chromium.launch(**launch_options())
         page = await browser.new_page(viewport={'width': 1600, 'height': 1000})
+        if os.environ.get('MP_RENDERER') == 'webgl1':
+            await page.add_init_script("const original=HTMLCanvasElement.prototype.getContext; HTMLCanvasElement.prototype.getContext=function(type,...args){return type==='webgl2'?null:original.call(this,type,...args)}")
         errors = []
         page.on('pageerror', lambda e: errors.append(str(e)))
         if os.environ.get('MP_RENDERER') != 'three':
@@ -45,6 +47,18 @@ async def run(url):
                     assert await page.evaluate('MoldPress.app.view.renderer.renderer.shadowMap.enabled') == (quality == 'high')
                     assert await page.evaluate('MoldPress.app.view.renderer.renderer.info.programs.every(p => p.diagnostics?.runnable !== false)')
             report['checks'].append({'name': 'Quality switches render successfully including high-quality shadows where supported', 'status': 'PASS'})
+            await page.evaluate("MoldPress.app.edit('PC view check', p=>{p.bodies[0].material='PC'})")
+            await page.get_by_test_id('pc-transparent').check()
+            await page.get_by_test_id('render-quality').select_option('high')
+            await page.wait_for_timeout(350)
+            assert await page.evaluate('MoldPress.app.view.records.some(r=>r.transmission>0)')
+            if os.environ.get('MP_RENDERER') == 'three':
+                assert await page.evaluate('Array.from(MoldPress.app.view.renderer.cache.values()).some(o=>o.material.isMeshPhysicalMaterial && o.material.transmission>0 && o.visible)')
+                assert await page.evaluate('MoldPress.app.view.renderer.renderer.info.programs.every(p=>p.diagnostics?.runnable !== false)')
+            await page.get_by_test_id('pc-transparent').uncheck()
+            await page.wait_for_timeout(100)
+            assert await page.evaluate('MoldPress.app.view.records.every(r=>!r.transmission)')
+            report['checks'].append({'name':'PC transparency enables and restores without geometry edits or shader failures','status':'PASS'})
             assert not errors, errors
             report['checks'].append({'name': 'Section controls work without page errors in the live UI', 'status': 'PASS'})
             await page.screenshot(path=str(OUTPUT/'evidence/enhancements.png'))

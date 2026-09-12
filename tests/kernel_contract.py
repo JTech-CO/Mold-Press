@@ -1,5 +1,4 @@
 """Compare geometry/sketch/mate behavior with recorded pre-refactor signatures."""
-import argparse
 import asyncio
 import json
 import traceback
@@ -25,9 +24,9 @@ EXERCISE = '''async fixtures => {
   return results;
 }'''
 
-async def main(record=False):
+async def main():
     reference=ROOT/'tests/fixtures/kernel-signatures.json'
-    source=ROOT/('archive/v1.1.0/index.html' if record else 'index.html')
+    source=ROOT/'index.html'
     fixtures={key:json.loads((ROOT/'tests/fixtures'/name).read_text(encoding='utf-8'))
         for key,name in [('sketch','sketch-extrude-cut.moldpress.json'),('mates','mated-blocks.moldpress.json')]}
     report={'status':'RUNNING','sha256':APP_SHA256,'checks':[]}
@@ -39,11 +38,6 @@ async def main(record=False):
             await page.goto(source.resolve().as_uri())
             await page.wait_for_function('window.MoldPress?.app?.view')
             result=await page.evaluate(EXERCISE,fixtures)
-            if record:
-                if reference.exists():raise RuntimeError('Reference signatures already exist.')
-                reference.write_text(json.dumps(result,indent=2),encoding='utf-8')
-                print('Recorded pre-refactor kernel signatures.')
-                return
             expected=json.loads(reference.read_text(encoding='utf-8'))
             assert result.keys()==expected.keys()
             for key,value in result.items():
@@ -55,10 +49,8 @@ async def main(record=False):
             report['status']='FAIL';report['error']=traceback.format_exc();print(report['error'])
         finally:
             await browser.close()
-            if not record:(OUTPUT/'kernel-results.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
+            (OUTPUT/'kernel-results.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
     if report['status']!='PASS':raise SystemExit(1)
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--record-baseline',action='store_true')
-    asyncio.run(main(parser.parse_args().record_baseline))
+    asyncio.run(main())
